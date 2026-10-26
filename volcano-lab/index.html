@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101817">
+  <meta name="description" content="调节岩浆黏度与气体含量，观察一次属于你的火山实验。">
+  <title>Volcano Lab｜火山实验室</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="js/model.js" defer></script>
+  <script src="js/scene.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="header">
+      <a class="brand" href="./index.html" aria-label="Volcano Lab 首页"><span class="brand-icon" aria-hidden="true">△</span> VOLCANO LAB<span class="brand-divider"></span><span class="brand-cn">火山实验室</span></a>
+      <span class="header-note"><i></i> INTERACTIVE EARTH SCIENCE</span>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div><p class="eyebrow">EXPERIMENT 01 / MAGMA & GAS</p><h1 id="page-title">一座火山，<span>不同的可能。</span></h1><p class="lead">改变岩浆的黏稠程度与气体含量，看看这次喷发会有什么不同。</p></div>
+        <p class="intro-index"><span>01</span> 调节参数 <b>→</b> <span>02</span> 触发喷发 <b>→</b> <span>03</span> 观察与理解</p>
+      </section>
+      <div class="lab-grid">
+        <section class="controls panel" aria-labelledby="controls-title">
+          <div class="section-heading"><span class="eyebrow">INPUT / 输入</span><span class="tiny">双参数实验</span></div>
+          <h2 id="controls-title">设定你的岩浆</h2>
+          <p class="control-intro">每次只改变一个参数，更容易发现规律。</p>
+          <div class="parameter">
+            <div class="parameter-top"><label for="viscosity">岩浆黏度 <small>VISCOSITY</small></label><output id="viscosity-value" for="viscosity">40<span> / 100</span></output></div>
+            <input id="viscosity" type="range" min="0" max="100" step="1" value="40" aria-describedby="viscosity-help viscosity-scale">
+            <div class="range-labels" id="viscosity-scale"><span>0 · 易流动</span><strong id="viscosity-level">中黏度</strong><span>100 · 很黏稠</span></div>
+            <p class="help" id="viscosity-help">像稀糖浆，还是像浓蜂蜜？黏度越高，岩浆越难流动，气体也越难逸出。</p>
+          </div>
+          <div class="parameter gas-parameter">
+            <div class="parameter-top"><label for="gas">气体含量 <small>GAS CONTENT</small></label><output id="gas-value" for="gas">40<span> / 100</span></output></div>
+            <input id="gas" type="range" min="0" max="100" step="1" value="40" aria-describedby="gas-help gas-scale">
+            <div class="range-labels" id="gas-scale"><span>0 · 很少</span><strong id="gas-level">中含量</strong><span>100 · 丰富</span></div>
+            <p class="help" id="gas-help">岩浆中的气体会在上升时膨胀。气体越多，越可能推动更强的喷发。</p>
+          </div>
+          <p class="scale-note">两项均为 0–100 教学相对指数，并非实际黏度单位或气体百分比。</p>
+          <div class="actions"><button id="trigger" class="trigger" type="button" aria-disabled="false"><span aria-hidden="true">↗</span> Trigger eruption <small>触发喷发</small></button><button id="reset" class="reset" type="button"><span aria-hidden="true">↺</span> Reset · 重置</button></div>
+          <p id="notice" class="notice" role="status" aria-live="polite" aria-atomic="true">准备好了。触发喷发，观察你的第一组结果。</p>
+        </section>
+        <section class="observatory panel" aria-labelledby="scene-title">
+          <div class="scene-top"><div><span class="eyebrow">LIVE / 观察窗</span><h2 id="scene-title">喷发观测台</h2></div><span id="phase" class="phase"><i></i> 等待实验</span></div>
+          <div class="scene-frame"><canvas id="volcano" width="1000" height="580" role="img" aria-label="火山示意图。尚未喷发；触发后将在下方显示文字结果。">火山动画需要支持 Canvas 的浏览器；实验结果也会以文字显示。</canvas><div class="scene-caption"><span>剖面示意 / 非真实比例</span><span id="scene-state">SYSTEM READY</span></div></div>
+          <div class="scene-legend"><span><i class="key lava-key"></i> 熔岩流动</span><span><i class="key ash-key"></i> 火山灰柱</span><span><i class="key risk-key"></i> 危险范围示意</span><span class="duration">约 7 秒 / 次</span></div>
+          <div class="progress-track" role="progressbar" aria-label="喷发进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span></span></div>
+        </section>
+      </div>
+      <section class="results" aria-labelledby="results-title">
+        <div class="results-heading"><div class="section-heading"><span class="eyebrow">OUTPUT / 观测结果</span><h2 id="results-title">这次喷发告诉我们什么？</h2></div><p id="result-context">等待实验 · 结果将在触发后生成</p></div>
+        <div class="metrics">
+          <article class="metric"><span class="metric-label"><i class="metric-symbol">≈</i> 熔岩流动</span><p><strong id="flow-result">—</strong><span id="flow-unit">流动指数 / 100</span></p><div class="meter"><span id="flow-meter"></span></div><small id="flow-description">观察熔岩能铺展多远</small></article>
+          <article class="metric"><span class="metric-label"><i class="metric-symbol">↑</i> 火山灰高度</span><p><strong id="ash-result">—</strong><span>高度指数 / 100</span></p><div class="meter"><span id="ash-meter"></span></div><small id="ash-description">观察灰柱升起的高度</small></article>
+          <article class="metric"><span class="metric-label"><i class="metric-symbol">ϟ</i> 喷发强度</span><p><strong id="intensity-result">—</strong><span>强度指数 / 100</span></p><div class="meter"><span id="intensity-meter"></span></div><small id="intensity-description">观察喷出物的活跃程度</small></article>
+          <article class="metric"><span class="metric-label"><i class="metric-symbol">◎</i> 危险范围</span><p><strong id="hazard-result">—</strong><span>范围指数 / 100</span></p><div class="meter"><span id="hazard-meter"></span></div><small id="hazard-description">综合熔岩铺展与爆发影响</small></article>
+        </div>
+        <article class="explanation" aria-labelledby="explanation-title"><div class="explanation-label"><span class="eyebrow">WHY IT HAPPENS</span><h3 id="explanation-title">从一次观察开始</h3><span id="style-badge" class="style-badge">等待喷发</span></div><div class="explanation-copy"><p id="explanation-text">试着先用较低黏度和较少气体喷发一次，再提高两个参数。留意：熔岩流得更远，是否一定意味着火山灰也更高？</p><p id="next-experiment" class="next-experiment">实验提示：比较时只改变一个参数，另一个保持不变。</p></div></article>
+      </section>
+      <aside class="model-note"><span class="note-icon" aria-hidden="true">i</span><p><strong>这是探索工具，不是火山预测。</strong> 动画和全部指数来自教学简化模型，不对应真实距离、高度或 VEI 等级。实际喷发还受温度、成分、地形、风向等影响；图中边界不代表安全线。<a href="https://www.usgs.gov/faqs/how-do-volcanoes-erupt" target="_blank" rel="noopener noreferrer">了解科学原理 ↗</a></p></aside>
+      <noscript><p class="noscript">请启用 JavaScript 后进行实验。此页面无需联网或安装依赖。</p></noscript>
+    </main>
+    <footer><span>VOLCANO LAB <span class="footer-dot">/</span> 让看不见的原理，看得见。</span><span>观察 · 比较 · 再试一次</span></footer>
+  </div>
+</body>
+</html>
