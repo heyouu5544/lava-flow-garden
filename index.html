@@ -32,7 +32,7 @@
       background-size: 5px 5px; mask-image: linear-gradient(to bottom, black, transparent 75%);
     }
     button { font: inherit; }
-    .shell { width: min(1280px, calc(100% - 36px)); margin: 0 auto; padding: 30px 0 34px; }
+    .shell { width: min(1540px, calc(100% - 30px)); margin: 0 auto; padding: 24px 0 30px; }
     header { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 20px; }
     .eyebrow { color: var(--gold); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; font-weight: 800; }
     h1 { margin: 7px 0 5px; font-size: clamp(2rem, 4vw, 3.35rem); line-height: .98; letter-spacing: -.055em; }
@@ -40,7 +40,8 @@
     .alert-chip { display: flex; align-items: center; gap: 9px; border: 1px solid rgba(255, 126, 76, .35); background: rgba(94, 39, 28, .35); color: #ffc3a0; border-radius: 999px; padding: 9px 13px; font-size: .74rem; letter-spacing: .12em; font-weight: 800; white-space: nowrap; }
     .pulse { width: 8px; height: 8px; border-radius: 50%; background: #ff6738; box-shadow: 0 0 13px #ff6738; animation: pulse 1.2s infinite; }
     @keyframes pulse { 50% { opacity: .35; transform: scale(.7); } }
-    .layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(300px, .8fr); gap: 16px; align-items: stretch; }
+    .layout { display: grid; grid-template-columns: minmax(0, 2.25fr) minmax(330px, .75fr); gap: 16px; align-items: stretch; }
+    .layout > * { min-width: 0; }
     .panel { border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: 0 24px 80px rgba(0,0,0,.24); backdrop-filter: blur(12px); }
     .map-panel { padding: 16px; }
     .map-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 2px 13px; }
@@ -54,7 +55,7 @@
     .swatch { width: 12px; height: 12px; border-radius: 3px; background: #f27b3e; box-shadow: 0 0 8px rgba(255,107,50,.45); }
     .swatch-rock { background: repeating-linear-gradient(135deg, #777 0 3px, #4d4f4c 3px 6px); }
     .swatch-risk { background: transparent; border: 2px solid #fa6c64; }
-    .side { padding: 19px; display: flex; flex-direction: column; gap: 16px; }
+    .side { padding: 17px; display: flex; flex-direction: column; gap: 13px; }
     .timer-card { display: flex; align-items: center; justify-content: space-between; padding: 14px 15px; background: rgba(8, 10, 14, .48); border: 1px solid var(--line); border-radius: 13px; }
     .timer-label { display: block; color: var(--muted); text-transform: uppercase; font-size: .65rem; letter-spacing: .16em; font-weight: 800; }
     .timer { font-variant-numeric: tabular-nums; font-size: 2.55rem; line-height: 1; letter-spacing: -.05em; font-weight: 850; color: var(--gold); }
@@ -77,6 +78,13 @@
     .risk-tag.medium { color: var(--gold); }
     .risk-tag.high { color: #ff8a74; }
     .route-readout { border-left: 2px solid var(--ember); padding: 1px 0 1px 10px; color: #d4cec7; font-size: .75rem; line-height: 1.45; min-height: 35px; }
+    .village-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+    .village-stat { padding:9px 8px; border:1px solid var(--line); border-radius:9px; background:rgba(8,14,22,.52); }
+    .village-stat span { display:block; color:#8999a7; font-size:.57rem; letter-spacing:.1em; text-transform:uppercase; font-weight:800; }
+    .village-stat strong { display:block; margin-top:4px; color:#eff6f3; font-size:.91rem; font-variant-numeric:tabular-nums; }
+    .village-stat strong.warn { color:#ff9a72; }
+    .intensity { height:5px; margin-top:8px; overflow:hidden; border-radius:99px; background:#27303b; }
+    .intensity > i { display:block; width:18%; height:100%; border-radius:inherit; background:linear-gradient(90deg,#74c8b2,#ffd26e,#ff684b); transition:width .35s; }
     .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
     .primary, .secondary { min-height: 43px; border-radius: 10px; font-weight: 850; letter-spacing: .05em; cursor: pointer; transition: transform .15s, filter .15s; }
     .primary { border: 0; color: #25140e; background: linear-gradient(135deg, #ffd081, #ff8049); box-shadow: 0 7px 23px rgba(255, 110, 56, .18); }
@@ -96,19 +104,19 @@
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     @media (min-width: 1000px) { .grid { grid-template-rows: repeat(8, minmax(44px, 1fr)); aspect-ratio: 10 / 8; } }
     @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } .grid { grid-template-rows: repeat(8, minmax(37px, 8vw)); } .side { display: grid; grid-template-columns: 1fr 1fr; } .side > .timer-card, .side > .status, .side > .result, .side > .toast, .side > .controls, .side > .help { grid-column: 1 / -1; } }
-    @media (max-width: 520px) { .shell { width: min(100% - 22px, 1280px); padding-top: 22px; } header { align-items: start; flex-direction: column; gap: 12px; } .map-panel { padding: 9px; } .grid { grid-template-rows: repeat(8, minmax(30px, 9vw)); } .marker-label { font-size: .42rem; } .side { padding: 13px; gap: 12px; } .map-legend { gap: 8px; font-size: .62rem; } }
+    @media (max-width: 520px) { .shell { width: min(100% - 22px, 1280px); padding-top: 22px; } header { align-items: start; flex-direction: column; gap: 12px; } .map-panel { padding: 9px; } .grid { grid-template-rows: repeat(8, minmax(30px, 9vw)); } .marker-label { font-size: .42rem; } .side { display:flex; padding: 13px; gap: 12px; } .map-legend { gap: 8px; font-size: .62rem; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
-    .map-frame { height: 650px; background:#080f1b; }
+    .map-frame { height: min(770px, calc(100vh - 190px)); min-height:650px; background:#0c1b2d; }
     .map-frame::before,.map-frame::after { display:none; }
     #world { width:100%;height:100%;display:block;touch-action:none;cursor:crosshair; }
     #labels { position:absolute;inset:0;pointer-events:none;overflow:hidden; }
-    .world-label { position:absolute;transform:translate(-50%,-100%);font-size:10px;font-weight:700;letter-spacing:1.2px;color:#dae9ee;background:#101b29de;border:1px solid #718aa34a;border-radius:5px;padding:5px 8px;white-space:nowrap; }
+    .world-label { position:absolute;transform:translate(-50%,-100%);font-size:10px;font-weight:700;letter-spacing:1.2px;color:#edf7fb;background:#102237e8;border:1px solid #8cb4ca66;border-radius:5px;padding:5px 8px;white-space:nowrap;box-shadow:0 4px 14px #0008; }
     .world-label.active { color:#ffd391;border-color:#ffb84b; }
     .view-tools { position:absolute;top:14px;right:14px;display:flex;gap:6px; }
     .view-tools button { color:#c6d7e5;background:#111b29dd;border:1px solid #52657a66;border-radius:6px;padding:7px 9px;font-size:11px;cursor:pointer; }
     .scene-caption { position:absolute;bottom:16px;left:16px;font-size:10px;letter-spacing:2px;color:#a3beca; }
     .scene-caption span { color:#657c8b;margin-left:12px; }
-    @media(max-width:850px) { .map-frame { height:540px; } }
+    @media(max-width:850px) { .map-frame { height:590px; min-height:0; } }
     @media(max-width:520px) { .map-frame { height:450px; } .map-topline span { display:none; } }
   </style>
 </head>
@@ -118,7 +126,7 @@
       <div>
         <div class="eyebrow">Volcanic response simulator · field station 04</div>
         <h1>LAST 30 SECONDS</h1>
-        <p class="subtitle">Defend the village. Redirect the flow.</p>
+        <p class="subtitle">Protect three districts and 780 residents as the eruption intensifies.</p>
       </div>
       <div class="alert-chip"><span class="pulse" aria-hidden="true"></span> ERUPTION IN PROGRESS</div>
     </header>
@@ -165,6 +173,15 @@
         </section>
 
         <section>
+          <h2 class="section-title">Village status</h2>
+          <div class="village-grid">
+            <div class="village-stat"><span>Residents</span><strong id="residentCount">780 safe</strong></div>
+            <div class="village-stat"><span>Buildings</span><strong id="buildingCount">30 safe</strong></div>
+            <div class="village-stat"><span>Intensity</span><strong id="intensityText">LOW</strong><div class="intensity"><i id="intensityBar"></i></div></div>
+          </div>
+        </section>
+
+        <section>
           <h2 class="section-title">Route forecast</h2>
           <div class="route-readout" id="routeReadout" aria-live="polite">Western Bay · route preview is ready.</div>
         </section>
@@ -178,7 +195,7 @@
           <button class="primary" id="startBtn">START RESPONSE</button>
           <button class="secondary" id="resetBtn">RESET</button>
         </div>
-        <p class="help">Click the ground to place a barrier; click it again to remove. Drag to orbit · scroll to zoom. On touch screens, drag to orbit and use the view buttons. Outlets remain adjustable during the countdown.</p>
+        <p class="help">Click the ground to place a barrier; click it again to remove. Drag to orbit · scroll to zoom. Lava accelerates after each seismic surge, so protect the three districts before the final impact.</p>
       </aside>
     </div>
     <footer>Interactive concept model · lava routes are simplified for play and are not a real hazard forecast.</footer>
