@@ -35,3 +35,15 @@ AI assistance: ChatGPT/Codex generated this revision and ran development checks.
 ### Development verification
 
 Checked in headless Chromium using local file loading: the 3D scene rendered without JavaScript runtime errors; placement and removal worked; a fourth barrier was rejected; dragging did not place barriers; outlet switching and reset worked. A complete live round reached Western Bay and produced a 100/100 safety report. A 390-pixel viewport was checked for horizontal overflow. These are development checks, not observations from a real participant.
+
+## Revision 3 — expanded map, village and game systems (2026-10-26)
+
+I found the 3D scene too small, too dark and visually simple. The village also looked like a small cluster rather than a place worth protecting, and the round did not provide enough information for strategic decisions.
+
+I enlarged the interface and 3D terrain, raised the exposure and night lighting, and added a moon, stars, brighter terrain colours and stronger village lights. The settlement now has three named districts: Old Town, River Ward and Farm Ridge. Together they contain 30 generated houses and 780 residents. Roads, trees, streetlights, a clock tower, detailed roofs, windows, chimneys and doors make the village easier to read as a lived-in place.
+
+The player still uses three barriers and an outlet choice, preserving the original concept. Gameplay now includes live resident and building counters, district-specific route warnings, and two seismic surges that accelerate lava after 10 and 20 seconds. The final report weighs resident safety, damaged buildings and whether lava reached an outlet. A dangerous route changes the forecast colour and names the threatened districts.
+
+### Development verification
+
+Checked in headless Chromium: the expanded scene rendered without JavaScript errors; three barriers could be placed; a fourth was rejected; dragging did not place a barrier; changing outlets updated the forecast; reset restored all resources; both intensity stages appeared; a complete round produced a report; and a 390-pixel viewport had no horizontal overflow. A real participant observation is still required before final course submission.
