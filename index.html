@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131b">
+  <title>Last 30 Seconds — Defend the Village</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f3eee7;
+      --muted: #aaa7a5;
+      --panel: rgba(22, 25, 33, .9);
+      --line: rgba(255, 239, 221, .12);
+      --ember: #ff7b3e;
+      --gold: #ffc56a;
+      --green: #91c7a2;
+      --blue: #91bbd2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 53% 15%, rgba(126, 50, 34, .34), transparent 32rem),
+        radial-gradient(ellipse at 8% 84%, rgba(50, 69, 86, .3), transparent 30rem),
+        linear-gradient(155deg, #11141c 0%, #1b1b21 50%, #10151b 100%);
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .2;
+      background-image: radial-gradient(#d6d0ca .6px, transparent .7px);
+      background-size: 5px 5px; mask-image: linear-gradient(to bottom, black, transparent 75%);
+    }
+    button { font: inherit; }
+    .shell { width: min(1280px, calc(100% - 36px)); margin: 0 auto; padding: 30px 0 34px; }
+    header { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 20px; }
+    .eyebrow { color: var(--gold); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; font-weight: 800; }
+    h1 { margin: 7px 0 5px; font-size: clamp(2rem, 4vw, 3.35rem); line-height: .98; letter-spacing: -.055em; }
+    .subtitle { margin: 0; color: #c4bfba; font-size: .96rem; }
+    .alert-chip { display: flex; align-items: center; gap: 9px; border: 1px solid rgba(255, 126, 76, .35); background: rgba(94, 39, 28, .35); color: #ffc3a0; border-radius: 999px; padding: 9px 13px; font-size: .74rem; letter-spacing: .12em; font-weight: 800; white-space: nowrap; }
+    .pulse { width: 8px; height: 8px; border-radius: 50%; background: #ff6738; box-shadow: 0 0 13px #ff6738; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 50% { opacity: .35; transform: scale(.7); } }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(300px, .8fr); gap: 16px; align-items: stretch; }
+    .panel { border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: 0 24px 80px rgba(0,0,0,.24); backdrop-filter: blur(12px); }
+    .map-panel { padding: 16px; }
+    .map-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 2px 13px; }
+    .map-topline strong { font-size: .9rem; letter-spacing: .02em; }
+    .map-topline span { color: var(--muted); font-size: .76rem; }
+    .map-frame { position: relative; overflow: hidden; border: 1px solid rgba(226, 215, 200, .2); border-radius: 13px; background: #252a2e; isolation: isolate; }
+    .map-frame::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 49% 4%, rgba(255, 104, 48, .24), transparent 27%), linear-gradient(155deg, #4a4540 0%, #31383a 47%, #25363c 100%); }
+    .map-frame::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: .2; background: repeating-radial-gradient(ellipse at 52% 4%, transparent 0 33px, rgba(255, 229, 184, .24) 34px 35px, transparent 36px 58px); }
+    .grid { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(8, minmax(36px, 7.4vw)); max-height: 590px; position: relative; z-index: 1; }
+    .tile { position: relative; min-width: 0; border: 1px solid rgba(239, 229, 209, .065); padding: 0; cursor: crosshair; transition: background .2s, box-shadow .2s, filter .2s; }
+    .tile:hover { filter: brightness(1.4); z-index: 2; box-shadow: inset 0 0 0 2px rgba(255, 234, 190, .65); }
+    .tile.e0 { background: rgba(48, 67, 67, .36); }
+    .tile.e1 { background: rgba(71, 76, 68, .4); }
+    .tile.e2 { background: rgba(96, 81, 65, .43); }
+    .tile.e3 { background: rgba(116, 79, 57, .44); }
+    .tile.e4 { background: rgba(124, 71, 51, .48); }
+    .tile.e5 { background: rgba(110, 58, 45, .49); }
+    .tile.e6 { background: rgba(83, 47, 43, .53); }
+    .tile.e7 { background: rgba(67, 46, 47, .58); }
+    .tile.e8 { background: rgba(60, 48, 53, .62); }
+    .tile.e9 { background: rgba(55, 48, 56, .68); }
+    .tile.forecast { box-shadow: inset 0 0 0 2px rgba(255, 177, 91, .63); background-color: rgba(255, 141, 58, .23); }
+    .tile.flowed { background: radial-gradient(circle, #ffbe66 0%, #f36c34 43%, #a93828 82%); box-shadow: inset 0 0 14px 5px rgba(255, 95, 36, .8); }
+    .tile.current { animation: molten .55s infinite alternate; }
+    @keyframes molten { to { filter: brightness(1.65); } }
+    .tile.rock { background: repeating-linear-gradient(135deg, #77746f 0 8px, #555651 8px 16px); box-shadow: inset 0 0 0 2px #c3bcb0; }
+    .tile.risk { box-shadow: inset 0 0 0 2px rgba(255, 83, 76, .8); }
+    .marker { position: absolute; z-index: 4; transform: translate(-50%, -50%); pointer-events: none; text-align: center; filter: drop-shadow(0 2px 3px #111); }
+    .marker-icon { display: block; font-size: clamp(1rem, 2vw, 1.55rem); line-height: 1; }
+    .marker-label { display: block; margin-top: 4px; padding: 2px 5px; border-radius: 4px; background: rgba(18, 20, 23, .82); color: #f5eee6; font-size: clamp(.47rem, .75vw, .62rem); font-weight: 800; letter-spacing: .08em; white-space: nowrap; }
+    .marker.outlet { cursor: pointer; pointer-events: auto; }
+    .marker.outlet .marker-label { border: 1px solid rgba(255,255,255,.16); }
+    .marker.outlet.selected .marker-label { border-color: var(--gold); color: #ffe2a4; box-shadow: 0 0 12px rgba(255,188,97,.35); }
+    .marker.village .marker-icon { filter: sepia(.35); }
+    .map-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px 2px 0; color: #c0bbb6; font-size: .69rem; }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; background: #f27b3e; box-shadow: 0 0 8px rgba(255,107,50,.45); }
+    .swatch-rock { background: repeating-linear-gradient(135deg, #777 0 3px, #4d4f4c 3px 6px); }
+    .swatch-risk { background: transparent; border: 2px solid #fa6c64; }
+    .side { padding: 19px; display: flex; flex-direction: column; gap: 16px; }
+    .timer-card { display: flex; align-items: center; justify-content: space-between; padding: 14px 15px; background: rgba(8, 10, 14, .48); border: 1px solid var(--line); border-radius: 13px; }
+    .timer-label { display: block; color: var(--muted); text-transform: uppercase; font-size: .65rem; letter-spacing: .16em; font-weight: 800; }
+    .timer { font-variant-numeric: tabular-nums; font-size: 2.55rem; line-height: 1; letter-spacing: -.05em; font-weight: 850; color: var(--gold); }
+    .timer.urgent { color: #ff7658; text-shadow: 0 0 18px rgba(255, 82, 54, .4); }
+    .status { min-height: 48px; color: #d0cbc6; font-size: .82rem; line-height: 1.5; }
+    .status strong { color: white; }
+    .section-title { margin: 0 0 8px; color: #d8d2cb; font-size: .69rem; letter-spacing: .15em; text-transform: uppercase; font-weight: 800; }
+    .rocks-row { display: flex; align-items: center; gap: 8px; }
+    .rock-count { color: var(--muted); font-size: .74rem; margin-left: auto; }
+    .rock-pip { width: 23px; height: 23px; border: 1px solid #8f8b85; border-radius: 7px; background: repeating-linear-gradient(135deg, #74736d 0 5px, #4d504d 5px 10px); }
+    .rock-pip.used { opacity: .2; filter: grayscale(1); }
+    .outlets { display: grid; gap: 7px; }
+    .outlet-button { display: grid; grid-template-columns: 28px 1fr auto; gap: 9px; align-items: center; text-align: left; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.025); padding: 10px; cursor: pointer; transition: .2s; }
+    .outlet-button:hover { border-color: rgba(255, 198, 106, .55); background: rgba(255,255,255,.055); }
+    .outlet-button.selected { border-color: var(--gold); background: rgba(255, 184, 92, .1); box-shadow: 0 0 0 1px rgba(255, 184, 92, .1); }
+    .outlet-icon { font-size: 1.2rem; text-align: center; }
+    .outlet-name { display: block; font-size: .76rem; font-weight: 800; }
+    .outlet-desc { display: block; margin-top: 2px; color: var(--muted); font-size: .65rem; }
+    .risk-tag { color: var(--green); font-size: .59rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    .risk-tag.medium { color: var(--gold); }
+    .risk-tag.high { color: #ff8a74; }
+    .route-readout { border-left: 2px solid var(--ember); padding: 1px 0 1px 10px; color: #d4cec7; font-size: .75rem; line-height: 1.45; min-height: 35px; }
+    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+    .primary, .secondary { min-height: 43px; border-radius: 10px; font-weight: 850; letter-spacing: .05em; cursor: pointer; transition: transform .15s, filter .15s; }
+    .primary { border: 0; color: #25140e; background: linear-gradient(135deg, #ffd081, #ff8049); box-shadow: 0 7px 23px rgba(255, 110, 56, .18); }
+    .secondary { border: 1px solid var(--line); color: var(--ink); background: rgba(255,255,255,.04); }
+    .primary:hover, .secondary:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .help { margin: 0; color: #aaa7a2; font-size: .7rem; line-height: 1.45; }
+    .result { display: none; border: 1px solid rgba(255, 197, 106, .3); border-radius: 13px; padding: 13px; background: rgba(255, 186, 93, .075); }
+    .result.show { display: block; animation: rise .3s ease-out; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+    .result-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .result h2 { margin: 0; font-size: .86rem; }
+    .score { color: var(--gold); font-size: 1.75rem; font-weight: 900; }
+    .result p { margin: 7px 0 0; color: #d0cbc4; font-size: .73rem; line-height: 1.5; }
+    .toast { min-height: 17px; margin: -7px 1px 0; color: #ffc58d; font-size: .69rem; }
+    footer { margin-top: 15px; text-align: center; color: #888984; font-size: .66rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (min-width: 1000px) { .grid { grid-template-rows: repeat(8, minmax(44px, 1fr)); aspect-ratio: 10 / 8; } }
+    @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } .grid { grid-template-rows: repeat(8, minmax(37px, 8vw)); } .side { display: grid; grid-template-columns: 1fr 1fr; } .side > .timer-card, .side > .status, .side > .result, .side > .toast, .side > .controls, .side > .help { grid-column: 1 / -1; } }
+    @media (max-width: 520px) { .shell { width: min(100% - 22px, 1280px); padding-top: 22px; } header { align-items: start; flex-direction: column; gap: 12px; } .map-panel { padding: 9px; } .grid { grid-template-rows: repeat(8, minmax(30px, 9vw)); } .marker-label { font-size: .42rem; } .side { padding: 13px; gap: 12px; } .map-legend { gap: 8px; font-size: .62rem; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">Volcanic response simulator · field station 04</div>
+        <h1>LAST 30 SECONDS</h1>
+        <p class="subtitle">Defend the village. Redirect the flow.</p>
+      </div>
+      <div class="alert-chip"><span class="pulse" aria-hidden="true"></span> ERUPTION IN PROGRESS</div>
+    </header>
+
+    <div class="layout">
+      <section class="panel map-panel" aria-label="Volcano map">
+        <div class="map-topline"><strong>SECTOR MAP · NORTH RIDGE</strong><span id="mapHint">Choose an outlet, then start the response.</span></div>
+        <div class="map-frame" id="mapFrame">
+          <div class="grid" id="grid" role="grid" aria-label="Interactive volcano terrain"></div>
+          <div class="marker" style="left:55%;top:6.25%"><span class="marker-icon">🌋</span><span class="marker-label">CRATER</span></div>
+          <div class="marker village" style="left:45%;top:81.25%"><span class="marker-icon">🏘️</span><span class="marker-label">VILLAGE</span></div>
+          <button class="marker outlet" data-outlet="west" aria-label="Select Western Bay outlet" style="left:5%;top:93.75%"><span class="marker-icon">🌊</span><span class="marker-label">WEST BAY</span></button>
+          <button class="marker outlet" data-outlet="east" aria-label="Select Eastern Quarry outlet" style="left:95%;top:93.75%"><span class="marker-icon">⛏️</span><span class="marker-label">QUARRY</span></button>
+          <button class="marker outlet" data-outlet="north" aria-label="Select North Basin outlet" style="left:95%;top:43.75%"><span class="marker-icon">🪨</span><span class="marker-label">NORTH BASIN</span></button>
+        </div>
+        <div class="map-legend" aria-label="Map legend">
+          <span class="legend-item"><i class="swatch"></i> active lava</span>
+          <span class="legend-item"><i class="swatch-rock"></i> rock barrier</span>
+          <span class="legend-item"><i class="swatch-risk"></i> village danger zone</span>
+          <span class="legend-item">gold outline · predicted route</span>
+        </div>
+      </section>
+
+      <aside class="panel side" aria-label="Game controls">
+        <div class="timer-card">
+          <div><span class="timer-label">Time to impact</span><span id="phaseLabel" class="timer-label" style="margin-top:6px;color:#d08a62">READY</span></div>
+          <div class="timer" id="timer" aria-live="polite">30</div>
+        </div>
+        <div class="status" id="status" aria-live="polite"><strong>Briefing:</strong> The flow is moving downhill. Place up to three barriers and choose where to redirect it before the timer ends.</div>
+
+        <section>
+          <h2 class="section-title">Rock barriers</h2>
+          <div class="rocks-row" id="rocksRow" aria-label="Three rock barriers available">
+            <span class="rock-pip"></span><span class="rock-pip"></span><span class="rock-pip"></span>
+            <span class="rock-count" id="rockCount">3 available</span>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="section-title">Choose an outlet</h2>
+          <div class="outlets">
+            <button class="outlet-button selected" data-outlet="west"><span class="outlet-icon">🌊</span><span><span class="outlet-name">Western Bay</span><span class="outlet-desc">Long route · keeps clear of homes</span></span><span class="risk-tag">LOW</span></button>
+            <button class="outlet-button" data-outlet="east"><span class="outlet-icon">⛏️</span><span><span class="outlet-name">Eastern Quarry</span><span class="outlet-desc">Steep route · passes near the village</span></span><span class="risk-tag medium">MED</span></button>
+            <button class="outlet-button" data-outlet="north"><span class="outlet-icon">🪨</span><span><span class="outlet-name">North Basin</span><span class="outlet-desc">Short route · narrow channel</span></span><span class="risk-tag high">HIGH</span></button>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="section-title">Route forecast</h2>
+          <div class="route-readout" id="routeReadout" aria-live="polite">Western Bay · route preview is ready.</div>
+        </section>
+
+        <section class="result" id="result" aria-live="polite">
+          <div class="result-head"><h2 id="resultTitle">Village safety report</h2><div class="score"><span id="score">100</span><span style="font-size:.72rem"> / 100</span></div></div>
+          <p id="resultText"></p>
+        </section>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <div class="controls">
+          <button class="primary" id="startBtn">START RESPONSE</button>
+          <button class="secondary" id="resetBtn">RESET</button>
+        </div>
+        <p class="help">Click an open tile to place a barrier. Click a placed barrier to remove it. You can change outlets while the lava is moving.</p>
+      </aside>
+    </div>
+    <footer>Interactive concept model · lava routes are simplified for play and are not a real hazard forecast.</footer>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+      const ROWS = 8, COLS = 10, LIMIT = 3, START_SECONDS = 30;
+      const source = { r: 0, c: 5 };
+      const village = { r: 6, c: 4 };
+      const exits = {
+        west: { r: 7, c: 0, name: "Western Bay" },
+        east: { r: 7, c: 9, name: "Eastern Quarry" },
+        north: { r: 3, c: 9, name: "North Basin" }
+      };
+      const heights = [
+        [9,9,8,7,6,4,5,7,8,9],
+        [9,8,7,6,4,2,4,6,7,8],
+        [8,7,6,5,3,1,3,5,6,7],
+        [7,6,5,4,3,2,3,4,5,6],
+        [6,5,4,3,2,3,4,4,3,2],
+        [5,4,3,2,3,4,5,5,3,1],
+        [4,3,2,3,4,5,5,4,3,0],
+        [3,2,3,4,5,6,5,4,3,0]
+      ];
+      const tileKey = (r,c) => `${r},${c}`;
+      const protectedZone = new Set([tileKey(5,3), tileKey(5,4), tileKey(5,5), tileKey(6,3), tileKey(6,4), tileKey(6,5), tileKey(7,4)]);
+      const protectedCells = new Set([tileKey(village.r, village.c)]);
+      const fixed = new Set([tileKey(source.r,source.c), ...Object.values(exits).map(p => tileKey(p.r,p.c)), ...protectedCells]);
+      const grid = document.getElementById("grid");
+      const timerEl = document.getElementById("timer");
+      const statusEl = document.getElementById("status");
+      const phaseEl = document.getElementById("phaseLabel");
+      const routeEl = document.getElementById("routeReadout");
+      const startBtn = document.getElementById("startBtn");
+      const resultEl = document.getElementById("result");
+      const outletNames = Object.fromEntries(Object.entries(exits).map(([key, value]) => [key, value.name]));
+      let state;
+
+      function freshState() {
+        return { phase: "ready", seconds: START_SECONDS, outlet: "west", barriers: new Set(), current: source, lava: new Set([tileKey(source.r,source.c)]), route: [], riskHits: new Set(), clock: null, motion: null };
+      }
+      state = freshState();
+
+      function same(a,b) { return a.r === b.r && a.c === b.c; }
+      function isExit(r,c) { return Object.values(exits).some(p => p.r === r && p.c === c); }
+      function isOpen(r,c) { return !state.barriers.has(tileKey(r,c)); }
+      function pathCost(from,to) {
+        const rise = heights[to.r][to.c] - heights[from.r][from.c];
+        const distance = 10 + Math.max(0, rise) * 8 - Math.max(0, -rise) * 1.5;
+        const villagePenalty = protectedZone.has(tileKey(to.r,to.c)) ? 20 : 0;
+        return Math.max(2, distance + villagePenalty);
+      }
+      function findRoute(start, goal) {
+        const dist = Array.from({length: ROWS}, () => Array(COLS).fill(Infinity));
+        const prev = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+        const open = [{r:start.r,c:start.c,cost:0}];
+        dist[start.r][start.c] = 0;
+        const dirs = [[1,0],[0,-1],[0,1],[-1,0]];
+        while (open.length) {
+          open.sort((a,b) => a.cost - b.cost);
+          const here = open.shift();
+          if (here.cost !== dist[here.r][here.c]) continue;
+          if (same(here,goal)) break;
+          for (const [dr,dc] of dirs) {
+            const r = here.r + dr, c = here.c + dc;
+            if (r < 0 || r >= ROWS || c < 0 || c >= COLS || !isOpen(r,c)) continue;
+            const nextCost = here.cost + pathCost(here,{r,c});
+            if (nextCost < dist[r][c]) { dist[r][c] = nextCost; prev[r][c] = here; open.push({r,c,cost:nextCost}); }
+          }
+        }
+        if (!Number.isFinite(dist[goal.r][goal.c])) return [];
+        const path = []; let cursor = goal;
+        while (cursor) { path.push({r:cursor.r,c:cursor.c}); if (same(cursor,start)) break; cursor = prev[cursor.r][cursor.c]; }
+        return path.reverse();
+      }
+      function activeRoute() {
+        const goal = exits[state.outlet];
+        return findRoute(state.current, goal);
+      }
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        clearTimeout(showToast.timeout);
+        showToast.timeout = setTimeout(() => { toast.textContent = ""; }, 2600);
+      }
+      function placeMarkers() {
+        document.querySelectorAll(".marker.outlet").forEach(el => el.classList.toggle("selected", el.dataset.outlet === state.outlet));
+        document.querySelectorAll(".outlet-button").forEach(el => {
+          const selected = el.dataset.outlet === state.outlet;
+          el.classList.toggle("selected", selected);
+          el.setAttribute("aria-pressed", String(selected));
+        });
+      }
+      function renderMap() {
+        state.route = activeRoute();
+        grid.replaceChildren();
+        for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+          const key = tileKey(r,c), tile = document.createElement("button");
+          tile.type = "button"; tile.className = `tile e${heights[r][c]}`;
+          tile.setAttribute("role","gridcell");
+          tile.setAttribute("aria-label", `Terrain row ${r+1}, column ${c+1}, elevation ${heights[r][c]}${state.barriers.has(key) ? ", rock barrier" : ""}${state.lava.has(key) ? ", lava" : ""}`);
+          if (state.route.some(point => point.r===r && point.c===c) && !state.lava.has(key)) tile.classList.add("forecast");
+          if (state.lava.has(key)) tile.classList.add("flowed");
+          if (same(state.current,{r,c}) && state.phase === "running") tile.classList.add("current");
+          if (state.barriers.has(key)) tile.classList.add("rock");
+          if (protectedZone.has(key)) tile.classList.add("risk");
+          tile.addEventListener("click", () => toggleBarrier(r,c));
+          grid.append(tile);
+        }
+        placeMarkers();
+        if (!state.route.length) routeEl.textContent = `${outletNames[state.outlet]} · no open route. Move a barrier or choose another outlet.`;
+        else {
+          const riskCount = state.route.filter(p => protectedZone.has(tileKey(p.r,p.c))).length;
+          routeEl.textContent = `${outletNames[state.outlet]} · ${state.route.length - 1} terrain steps · ${riskCount ? "crosses the village buffer" : "village buffer looks clear"}.`;
+        }
+        document.getElementById("rockCount").textContent = `${LIMIT-state.barriers.size} available`;
+        document.querySelectorAll(".rock-pip").forEach((el,index) => el.classList.toggle("used", index >= LIMIT-state.barriers.size));
+      }
+      function toggleBarrier(r,c) {
+        if (state.phase === "finished") { showToast("Reset the response to play again."); return; }
+        const key = tileKey(r,c);
+        if (state.barriers.has(key)) { state.barriers.delete(key); showToast("Barrier removed. The route forecast has updated."); renderMap(); return; }
+        if (fixed.has(key)) { showToast("Keep the crater, village and outlets clear."); return; }
+        if (state.lava.has(key)) { showToast("Lava has already reached this tile. Place a barrier ahead of the flow."); return; }
+        if (state.barriers.size >= LIMIT) { showToast("All three barriers are placed. Click one to move it."); return; }
+        state.barriers.add(key);
+        showToast("Barrier placed. Check the updated route forecast.");
+        recoverStalledFlow();
+        renderMap();
+      }
+      function recoverStalledFlow() {
+        if (state.phase === "stalled" && activeRoute().length > 1) {
+          state.phase = "running";
+          updateStatus();
+        }
+      }
+      function selectOutlet(key) {
+        if (!exits[key] || state.phase === "finished") return;
+        state.outlet = key;
+        recoverStalledFlow();
+        renderMap();
+        showToast(`${outletNames[key]} selected. The route forecast has updated.`);
+        if (state.phase === "running") updateStatus();
+      }
+      function updateStatus() {
+        if (state.phase === "ready") {
+          statusEl.innerHTML = "<strong>Briefing:</strong> The flow is moving downhill. Place up to three barriers and choose where to redirect it before the timer ends.";
+          phaseEl.textContent = "READY";
+          document.getElementById("mapHint").textContent = "Choose an outlet, then start the response.";
+        } else if (state.phase === "running") {
+          phaseEl.textContent = "LIVE FLOW";
+          document.getElementById("mapHint").textContent = "Route recalculates as the flow advances.";
+          statusEl.innerHTML = `<strong>Response live:</strong> ${outletNames[state.outlet]} selected. Place or move barriers ahead of the lava.`;
+        } else if (state.phase === "stalled") {
+          phaseEl.textContent = "FLOW STALLED";
+          statusEl.innerHTML = "<strong>Flow stalled:</strong> No open path to this outlet. Move a barrier or select another outlet before time runs out.";
+        } else {
+          phaseEl.textContent = "REPORT";
+          document.getElementById("mapHint").textContent = "Response complete · review the route and safety report.";
+        }
+        startBtn.disabled = state.phase === "running" || state.phase === "stalled";
+        startBtn.textContent = state.phase === "finished" ? "PLAY AGAIN" : (state.phase === "ready" ? "START RESPONSE" : "FLOW IN PROGRESS");
+      }
+      function setOutletFromAnyControl(e) {
+        const button = e.target.closest("[data-outlet]");
+        if (button) selectOutlet(button.dataset.outlet);
+      }
+      document.querySelectorAll("[data-outlet]").forEach(el => el.addEventListener("click", setOutletFromAnyControl));
+
+      function start() {
+        if (state.phase === "finished") { reset(); return; }
+        if (state.phase !== "ready") return;
+        state.phase = "running";
+        updateStatus();
+        showToast("The flow is moving. Reroute it before impact.");
+        state.clock = setInterval(() => {
+          state.seconds -= 1;
+          timerEl.textContent = String(state.seconds).padStart(2,"0");
+          timerEl.classList.toggle("urgent", state.seconds <= 10);
+          if (state.seconds <= 0) finish(false);
+        }, 1000);
+        state.motion = setInterval(advanceLava, 1750);
+        renderMap();
+      }
+      function advanceLava() {
+        if (state.phase !== "running" && state.phase !== "stalled") return;
+        const route = activeRoute();
+        if (!route.length || route.length < 2) {
+          state.phase = "stalled"; updateStatus(); renderMap(); return;
+        }
+        state.phase = "running";
+        const next = route[1];
+        state.current = next;
+        const key = tileKey(next.r,next.c);
+        state.lava.add(key);
+        if (protectedZone.has(key)) state.riskHits.add(key);
+        if (same(next, exits[state.outlet])) { finish(true); return; }
+        updateStatus(); renderMap();
+      }
+      function finish(reachedExit) {
+        clearInterval(state.clock); clearInterval(state.motion);
+        state.phase = "finished";
+        const crossed = state.riskHits.size;
+        const timedOut = !reachedExit;
+        let score = Math.max(0, 100 - crossed * 24 - (timedOut ? 24 : 0));
+        if (reachedExit && crossed === 0) score = Math.min(100, score + Math.floor(state.seconds / 3));
+        document.getElementById("score").textContent = String(score);
+        const title = document.getElementById("resultTitle");
+        const text = document.getElementById("resultText");
+        if (timedOut) {
+          title.textContent = "Impact window reached";
+          text.textContent = crossed ? `The flow entered ${crossed} village danger tile${crossed===1?"":"s"} and did not reach an outlet. Try changing the outlet earlier, then place a barrier ahead of the flow.` : "The village buffer stayed clear, but the flow did not reach an outlet in time. Try a closer outlet or clear one tile from the route.";
+        } else if (crossed) {
+          title.textContent = "Village safety report";
+          text.textContent = `The flow reached ${outletNames[state.outlet]} after crossing ${crossed} village danger tile${crossed===1?"":"s"}. Next time, block the highlighted corridor earlier or choose an outlet that keeps more distance from the homes.`;
+        } else {
+          title.textContent = "Village protected";
+          text.textContent = `The flow reached ${outletNames[state.outlet]} without entering the village danger zone. Try another outlet or use fewer barriers to compare your strategy.`;
+        }
+        resultEl.classList.add("show");
+        updateStatus(); renderMap();
+        startBtn.disabled = false; startBtn.textContent = "PLAY AGAIN";
+      }
+      function reset() {
+        clearInterval(state.clock); clearInterval(state.motion);
+        state = freshState();
+        timerEl.textContent = "30"; timerEl.classList.remove("urgent");
+        resultEl.classList.remove("show");
+        document.getElementById("score").textContent = "100";
+        updateStatus(); renderMap();
+        showToast("Map reset. Choose an outlet and plan a new route.");
+      }
+      startBtn.addEventListener("click", start);
+      document.getElementById("resetBtn").addEventListener("click", reset);
+      renderMap(); updateStatus();
+    })();
+  </script>
+</body>
+</html>
