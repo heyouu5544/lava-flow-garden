@@ -3,8 +3,19 @@
   const model = window.VolcanoModel;
   const $ = (id) => document.getElementById(id);
   const sliders = { viscosity: $("viscosity"), gas: $("gas") };
-  const scene = new window.VolcanoScene($("volcano"));
-  const duration = 7000;
+  const viewButtons = [...document.querySelectorAll("[data-view]")];
+  const partButtons = [...document.querySelectorAll("[data-part]")];
+  const presets = [...document.querySelectorAll("[data-preset]")];
+  const resultsPanel = document.querySelector(".results");
+  const triggerDefaultContent = $("trigger").innerHTML;
+  const scene = new window.LiveVolcanoScene($("volcano"), $("render-status"), () => {
+    viewButtons.forEach(button => { button.disabled = true; });
+  });
+  scene.onOrbit = () => {
+    viewButtons.forEach(button => button.setAttribute("aria-pressed", "false"));
+    if (!scene.fallbackActive) $("render-status").textContent = "自定义观察角度。拖动继续旋转，双指或滚轮缩放；不改变实验参数。";
+  };
+  const duration = 8500;
   let phase = "ready", animationFrame = null, lastResult = null, runNumber = 0;
   const initialExplanation = $("explanation-text").textContent;
   const initialSuggestion = $("next-experiment").textContent;
@@ -25,12 +36,20 @@
     phase = next;
     const running = phase === "running";
     $("trigger").setAttribute("aria-disabled", String(running));
-    // aria-disabled keeps the button focusable so a repeated attempt can be explained.
+    $("trigger").disabled = running;
+    $("trigger").innerHTML = running ? '<span aria-hidden="true">◉</span> 喷发进行中 <small>请稍候</small>' : triggerDefaultContent;
     Object.values(sliders).forEach(input => { input.disabled = running; });
+    presets.forEach(button => { button.disabled = running; });
     $("phase").classList.toggle("running", running);
     $("phase").replaceChildren();
     $("phase").append(document.createElement("i"), document.createTextNode(running ? "喷发进行中" : phase === "finished" ? "实验完成" : "等待实验"));
     $("scene-state").textContent = running ? "ERUPTION IN PROGRESS" : phase === "finished" ? "OBSERVATION COMPLETE" : "SYSTEM READY";
+  }
+  let cameraNoticeTimer = null;
+  function showCameraNotice(message) {
+    const notice = $("camera-notice");
+    notice.textContent = message; notice.classList.add("visible");
+    clearTimeout(cameraNoticeTimer); cameraNoticeTimer = setTimeout(() => notice.classList.remove("visible"), 1350);
   }
   function progress(value) {
     $("progress").setAttribute("aria-valuenow", String(Math.round(value * 100)));
@@ -58,18 +77,23 @@
     lastResult = model.calculate(sliders.viscosity.value, sliders.gas.value);
     runNumber += 1;
     const result = lastResult;
+    $("history-card").hidden = true; resultsPanel.dataset.revealed = "false";
     setPhase("running"); showResults(result); progress(0);
-    announce("喷发已开始，参数暂时锁定。观察熔岩、灰柱与虚线范围；约 7 秒后可再次实验。");
+    scene.playCue(result);
+    announce("喷发已开始，参数暂时锁定。先观察压力积累，再留意岩浆、灰柱与喷出物；约 9 秒后可再次实验。");
     const startTime = performance.now();
     function frame(now) {
       if (phase !== "running") return;
       const elapsed = Math.min(1, (now - startTime) / duration);
       scene.draw(result, elapsed); progress(elapsed);
+      $("scene-state").textContent = elapsed < .22 ? "PRESSURE BUILDING" : elapsed < .64 ? "ERUPTION RELEASE" : "ASH & LAVA SETTLING";
       if (elapsed < 1) animationFrame = requestAnimationFrame(frame);
       else {
         animationFrame = null; setPhase("finished");
+        showHistory(result);
+        resultsPanel.dataset.revealed = "true";
         $("result-context").textContent = `实验 ${String(runNumber).padStart(2,"0")} · 黏度 ${result.viscosity} / 气体 ${result.gas} · 观测完成`;
-        announce(`实验完成：${result.style}。熔岩流动 ${result.flow}、灰柱高度 ${result.ash}、强度 ${result.intensity}、危险范围 ${result.hazard}。可调整参数再次触发。`);
+        announce(`实验完成：${result.style}。熔岩流动 ${result.flow}、灰柱高度 ${result.ash}、强度 ${result.intensity}、危险范围 ${result.hazard}。下方历史喷发对照已更新，可调整参数再次触发。`);
       }
     }
     animationFrame = requestAnimationFrame(frame);
@@ -78,7 +102,13 @@
     if (animationFrame !== null) cancelAnimationFrame(animationFrame);
     animationFrame = null; lastResult = null; runNumber = 0;
     Object.entries(sliders).forEach(([key, input]) => { input.value = model.DEFAULTS[key]; });
-    setPhase("ready"); updateInputs(); progress(0); scene.draw();
+    setPhase("ready"); updateInputs(); progress(0); scene.reset();
+    if (!scene.fallbackActive) $("render-status").textContent = "3D 模型已就绪 · 正面视角";
+    $("history-card").hidden = true; resultsPanel.dataset.revealed = "false";
+    viewButtons.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.view === "front")));
+    partButtons.forEach(button => button.setAttribute("aria-pressed", "false"));
+    scene.setPart(null);
+    $("part-description").textContent = "选择视角或部位开始观察。灰云和熔岩会在喷发后出现。";
     Object.entries(metricDefaults).forEach(([key, description]) => {
       $(`${key}-result`).textContent = "—"; $(`${key}-meter`).style.width = "0%"; $(`${key}-description`).textContent = description;
     });
@@ -88,14 +118,50 @@
     $("volcano").setAttribute("aria-label", "火山示意图。尚未喷发；触发后将在下方显示文字结果。");
     announce("已重置：黏度 40，气体 40。准备好了，可以开始新的实验。");
   }
-  Object.values(sliders).forEach(input => input.addEventListener("input", () => {
+  function parametersChanged() {
     if (phase === "running") return;
     updateInputs();
     if (lastResult) {
       $("result-context").textContent = `下方仍为实验 ${String(runNumber).padStart(2,"0")} 的结果（黏度 ${lastResult.viscosity} / 气体 ${lastResult.gas}）`;
       announce("参数已调整。点击 Trigger eruption，生成这组新参数的结果。");
+      if (!$("history-card").hidden) $("history-context").textContent = `仍对应实验 ${String(runNumber).padStart(2,"0")}（黏度 ${lastResult.viscosity} / 气体 ${lastResult.gas}），请重新触发以更新。`;
     }
+  }
+  Object.values(sliders).forEach(input => input.addEventListener("input", parametersChanged));
+  presets.forEach(button => button.addEventListener("click", () => {
+    if (phase === "running") return;
+    const [viscosity, gas] = button.dataset.preset.split(",");
+    sliders.viscosity.value = viscosity; sliders.gas.value = gas; parametersChanged();
+    announce(`已设置黏度 ${viscosity} / 气体 ${gas}。点击 Trigger eruption 开始，已有结果不会自动改变。`);
   }));
+  viewButtons.forEach(button => button.addEventListener("click", () => {
+    scene.setPart(null);
+    scene.setView(button.dataset.view);
+    viewButtons.forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+    partButtons.forEach(item => item.setAttribute("aria-pressed", "false"));
+    showCameraNotice(`正在切换至${button.textContent}视角`);
+    if (!scene.fallbackActive) $("render-status").textContent = `正在平滑切换至${button.textContent}视角。镜头移动不会改变实验参数。`;
+  }));
+  partButtons.forEach(button => button.addEventListener("click", () => {
+    scene.setPart(button.dataset.part);
+    partButtons.forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+    viewButtons.forEach(item => item.setAttribute("aria-pressed", "false"));
+    showCameraNotice(`正在靠近${button.textContent}`);
+    $("part-description").textContent = window.VolcanoParts[button.dataset.part];
+  }));
+  function showHistory(result) {
+    const match = window.VolcanoHistory.match(result);
+    $("history-card").hidden = false;
+    $("history-context").textContent = `实验 ${String(runNumber).padStart(2,"0")} · 黏度 ${result.viscosity} / 气体 ${result.gas}`;
+    $("history-year").textContent = match ? match.year : "—";
+    $("history-name").textContent = match ? match.name : "没有足够相似的案例";
+    $("history-summary").textContent = match ? match.summary : "本次模拟的表现介于已核实案例的对照条件之间。当前案例库不足以给出恰当类比。";
+    $("history-similarity").textContent = match ? match.similarity : "不强行对应真实火山。可以继续比较本次熔岩、灰柱与强度，或调整一个参数再试。";
+    $("history-limits").textContent = match ? match.limits : "这不意味着自然界没有类似喷发，只表示这里没有足够依据选择案例。";
+    $("history-source").hidden = !match;
+    if (match) { $("history-source").href = match.source; $("history-source").textContent = match.sourceLabel; }
+    else { $("history-source").removeAttribute("href"); $("history-source").textContent = ""; }
+  }
   $("trigger").addEventListener("click", trigger);
   $("reset").addEventListener("click", reset);
   updateInputs();
