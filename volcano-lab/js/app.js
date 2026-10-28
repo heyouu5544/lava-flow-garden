@@ -8,13 +8,7 @@
   const presets = [...document.querySelectorAll("[data-preset]")];
   const resultsPanel = document.querySelector(".results");
   const triggerDefaultContent = $("trigger").innerHTML;
-  const scene = new window.LiveVolcanoScene($("volcano"), $("render-status"), () => {
-    viewButtons.forEach(button => { button.disabled = true; });
-  });
-  scene.onOrbit = () => {
-    viewButtons.forEach(button => button.setAttribute("aria-pressed", "false"));
-    if (!scene.fallbackActive) $("render-status").textContent = "自定义观察角度。拖动继续旋转，双指或滚轮缩放；不改变实验参数。";
-  };
+  const scene = new window.LiveVolcanoScene($("volcano"), $("render-status"));
   const duration = 8500;
   let phase = "ready", animationFrame = null, lastResult = null, runNumber = 0;
   const initialExplanation = $("explanation-text").textContent;
@@ -31,12 +25,13 @@
       input.style.setProperty("--value", `${input.value}%`);
       input.setAttribute("aria-valuetext", `${input.value}，${grade}，教学相对指数，满分 100`);
     });
+    presets.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.preset === `${sliders.viscosity.value},${sliders.gas.value}`)));
   }
   function setPhase(next) {
     phase = next;
     const running = phase === "running";
     $("trigger").setAttribute("aria-disabled", String(running));
-    $("trigger").disabled = running;
+    // Keep the trigger focusable so repeated attempts receive a status message.
     $("trigger").innerHTML = running ? '<span aria-hidden="true">◉</span> 喷发进行中 <small>请稍候</small>' : triggerDefaultContent;
     Object.values(sliders).forEach(input => { input.disabled = running; });
     presets.forEach(button => { button.disabled = running; });
@@ -80,6 +75,7 @@
     $("history-card").hidden = true; resultsPanel.dataset.revealed = "false";
     setPhase("running"); showResults(result); progress(0);
     scene.playCue(result);
+    if (matchMedia("(max-width: 760px)").matches) document.querySelector(".observatory").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
     announce("喷发已开始，参数暂时锁定。先观察压力积累，再留意岩浆、灰柱与喷出物；约 9 秒后可再次实验。");
     const startTime = performance.now();
     function frame(now) {
@@ -100,10 +96,11 @@
   }
   function reset() {
     if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+    clearTimeout(cameraNoticeTimer); $("camera-notice").classList.remove("visible");
     animationFrame = null; lastResult = null; runNumber = 0;
     Object.entries(sliders).forEach(([key, input]) => { input.value = model.DEFAULTS[key]; });
     setPhase("ready"); updateInputs(); progress(0); scene.reset();
-    if (!scene.fallbackActive) $("render-status").textContent = "3D 模型已就绪 · 正面视角";
+    $("render-status").textContent = "二维地质观察图 · 场景全景";
     $("history-card").hidden = true; resultsPanel.dataset.revealed = "false";
     viewButtons.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.view === "front")));
     partButtons.forEach(button => button.setAttribute("aria-pressed", "false"));
@@ -139,8 +136,9 @@
     scene.setView(button.dataset.view);
     viewButtons.forEach(item => item.setAttribute("aria-pressed", String(item === button)));
     partButtons.forEach(item => item.setAttribute("aria-pressed", "false"));
-    showCameraNotice(`正在切换至${button.textContent}视角`);
-    if (!scene.fallbackActive) $("render-status").textContent = `正在平滑切换至${button.textContent}视角。镜头移动不会改变实验参数。`;
+    showCameraNotice(`正在切换至${button.textContent}`);
+    $("part-description").textContent = button.dataset.view === "section" ? "山体剖面：观察红色岩浆储集区、上升通道与气体气泡。" : button.dataset.view === "crater" ? window.VolcanoParts.crater : "场景全景：火山、周边地形和山脚村庄。选择一个观察目标可放大并查看说明。";
+    $("render-status").textContent = `二维观察镜头 · ${button.textContent} · 不改变实验参数`;
   }));
   partButtons.forEach(button => button.addEventListener("click", () => {
     scene.setPart(button.dataset.part);
@@ -148,6 +146,7 @@
     viewButtons.forEach(item => item.setAttribute("aria-pressed", "false"));
     showCameraNotice(`正在靠近${button.textContent}`);
     $("part-description").textContent = window.VolcanoParts[button.dataset.part];
+    $("render-status").textContent = `二维观察目标 · ${button.textContent}`;
   }));
   function showHistory(result) {
     const match = window.VolcanoHistory.match(result);
@@ -164,5 +163,7 @@
   }
   $("trigger").addEventListener("click", trigger);
   $("reset").addEventListener("click", reset);
+  $("return-overview").addEventListener("click", () => viewButtons.find(button => button.dataset.view === "front").click());
+  window.VolcanoLab = { scene, reset };
   updateInputs();
 })();
