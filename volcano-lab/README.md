@@ -1,55 +1,71 @@
-# VOLCANO LAB · 彩色火山绘本实验室
+# Volcano Lab · A Colorful Interactive Storybook
 
-从会流动的火山封面出发，穿过分层视差开场和五段知识对话，亲手探索岩浆黏度与气体含量如何改变喷发表现。湖蓝天空、蓝紫岩层、珊瑚橙与明黄熔岩、奶油色烟云组成同一个二维手绘世界。
+Begin on an animated volcano cover, travel through a layered parallax opening and five short lessons, then explore how magma viscosity and gas content change an eruption. Lake blue skies, blue-violet rock layers, coral-orange and yellow lava, and cream-colored clouds share one hand-painted 2D world.
 
-这是 `heyouu5544/lava-flow-garden` 仓库中的 `volcano-lab/` 项目。本次修改发生在实际 Git 检出目录 `github-sync/lava-flow-garden/volcano-lab/`，未将工作区外层的预览副本当作仓库。此前提交历史保留。
+This is the current project in `heyouu5544/lava-flow-garden`. Work was completed in the actual Git checkout at `github-sync/lava-flow-garden/volcano-lab/`, not in the separate preview copy elsewhere in the workspace. The repository's full history remains intact.
 
-## 本地运行
+## Play online
 
-在仓库根目录运行：
+- [Launch the storybook opening](https://heyouu5544.github.io/lava-flow-garden/volcano-lab/)
+- [Go directly to the experiment](https://heyouu5544.github.io/lava-flow-garden/volcano-lab/lab.html)
+
+![English Volcano Lab title screen](./screenshots/storybook-01-title.png)
+
+![English lesson dialogue](./screenshots/storybook-03-lesson.png)
+
+![English experiment interface](./screenshots/storybook-04-lab.png)
+
+## Run locally
+
+From the repository root:
 
 ```powershell
 node volcano-lab/serve.cjs
 ```
 
-打开 http://127.0.0.1:4173/ 观看开场；http://127.0.0.1:4173/lab.html 直接进入实验台。原生 HTML、CSS、Canvas，无 npm 运行依赖和外部字体，也可直接打开 HTML 离线使用。
+Open <http://127.0.0.1:4173/> for the opening or <http://127.0.0.1:4173/lab.html> for the lab. The project uses native HTML, CSS, JavaScript, and Canvas, with no npm runtime dependency or external font.
 
-## 玩法与保留功能
+The startup log prints the absolute `Serving project` path. Visit <http://127.0.0.1:4173/__preview.json> to verify the served root, entry file, and SHA-256 hash. Responses also include `X-Volcano-Lab-Root`. In this workspace the path must end in `github-sync/lava-flow-garden/volcano-lab/`.
 
-- 点击「开始探索」，观看远景、村庄横移、山体推进、火山口和剖面的约 9 秒开场。可跳过镜头、跳过介绍或从实验台重新观看。
-- 五段对话分别介绍火山、黏度、气体、操作和实验任务。文字出现时点击会立即显示全文，再点击进入下一段。Enter / 空格继续，Esc 进入实验；按钮支持 Tab 导航。减少动态效果设置下直接显示全文并跳过自动推镜。
-- 两个 0–100 滑块有刻度、数值和键盘控制，四种组合预设有填色、深紫描边和 ✓ 标记。
-- Trigger eruption 启动约 8.5 秒喷发，包含压力积累、释放和稳定阶段；运行中参数锁定、重复触发有说明，Reset 可随时取消。
-- 低黏度形成快速、较远并分叉的熔岩流；高黏度形成短厚熔岩与近口穹丘；丰富气体增加喷泉、烟柱和碎屑。四项结果、原因解释与下一次实验建议保留原模型。
-- 火山口、灰云、熔岩流和村庄观察会实际移动/放大镜头，显示明黄高亮并更新说明；可返回全景或查看山体剖面。
-- 喷发后显示 Maunaulu、圣海伦斯或皮纳图博的教学类比，保留来源与局限；中间组合可能不选择案例。调参数后，上一轮结果仍明确注明原参数。
-- 手机采用场景在前、参数在后的单列布局，触发时滚回场景。文字结果不依赖读图。
+## Experience and retained features
 
-## 文件与美术
+- Start with a roughly nine-second illustrated camera journey through distant terrain, the village, mountain slopes, crater, and cutaway. The tour and lessons can be skipped or replayed.
+- Five focused dialogue chapters introduce volcanoes, viscosity, gas content, experiment controls, and the comparison task. Click once to reveal the current paragraph, then again to continue. Enter and Space continue; Escape skips to the lab.
+- Two 0–100 sliders provide tick labels, live values, and keyboard control. Four presets show visible selected states.
+- Trigger eruption runs an 8.5-second sequence with pressure buildup, release, and settling. Inputs lock during the run, repeat triggers produce a clear notice, and Reset can cancel at any time.
+- Low viscosity creates fast, branching, long-distance flows. High viscosity creates short, thick flows and near-vent buildup. High gas increases fountains, ash, ejecta, and explosive activity.
+- Crater, ash cloud, lava flow, and village observations move or zoom the camera, highlight the target, and update the explanation. A full-scene view and volcano cutaway remain available.
+- Results include four indices, a plain-language explanation, a next-experiment suggestion, and a sourced analogy to Maunaulu, Mount St. Helens, or Mount Pinatubo when the match is responsible.
+- The mobile layout places the scene before controls and avoids relying on imagery alone for results.
 
-| 文件 | 用途 |
+## Files
+
+| File | Purpose |
 | --- | --- |
-| `index.html` / `lab.html` | 开场入口 / 直接实验入口 |
-| `storybook.css` | 彩色手绘界面、对话框、状态与响应式布局 |
-| `js/scene.js` | 原创山体、植被、村庄、云、颗粒、三层视差与喷发动画 |
-| `js/story.js` | 开场镜头、逐字讲解、键盘、跳过与重看 |
-| `js/app.js` / `js/observer.js` | 实验生命周期、结果、Reset 与观察 |
-| `js/model.js` / `js/history.js` | 保留的教学模型、历史资料与匹配规则 |
-| `ASSETS.md` | 素材来源与原创绘制说明 |
-| `VERIFICATION.md` | 本次实际验证结果与截图索引 |
+| `index.html` / `lab.html` | Storybook opening / direct experiment entry |
+| `storybook.css` | Hand-painted UI, dialogue, states, and responsive layout |
+| `js/scene.js` | Original terrain, vegetation, village, clouds, texture, parallax, and eruption animation |
+| `js/story.js` | Opening shots, typed dialogue, keyboard controls, skip, and replay |
+| `js/app.js` / `js/observer.js` | Experiment lifecycle, results, Reset, and observation tools |
+| `js/model.js` / `js/history.js` | Teaching model, historical sources, and matching rules |
+| `ASSETS.md` | Artwork, reference, and science credits |
+| `VERIFICATION.md` | Current developer verification and screenshot index |
 
-旧版 `print.css`、`styles*.css`、旧三维脚本和旧截图保留为历史资料，当前入口只加载 `storybook.css` 和所列脚本。
+Earlier CSS, 3D scripts, and JPG screenshots remain as historical artifacts. The current entry points load `storybook.css` and the scripts listed in their HTML.
 
-## 检查
+## Verification
 
 ```powershell
 node --test volcano-lab/tests/model.test.cjs volcano-lab/tests/history.test.cjs
 node --check volcano-lab/js/scene.js
 node --check volcano-lab/js/story.js
-# 先启动本地服务，再运行真实 Edge 浏览器测试（Windows）：
+# Start the local server first, then run the installed Edge browser checks:
 node volcano-lab/tests/browser-smoke.cjs
+node volcano-lab/tests/browser-smoke.cjs --layouts-only
 ```
 
-浏览器脚本使用已安装的 Edge、临时独立配置和本机 CDP 端口 9333，无额外依赖；可用 `EDGE_PATH` 指定安装位置。截图写入 `screenshots/storybook-*.png`。浏览器检查属于开发者自动验证与截图审查，没有真实同学试用。
+The browser script uses an installed Microsoft Edge instance, a temporary profile, and a dynamically assigned local CDP port. It writes the current English screenshots to `screenshots/storybook-*.png`.
 
-全部指数是教学相对指数，不是实际距离、高度、气体百分比、VEI 或真实安全边界，也不能用于喷发预测。
+These are developer checks and screenshot reviews, not a participant study. A real classmate trial and any design change based on it are still pending.
+
+All values are relative teaching indices, not real distances, heights, gas percentages, VEI levels, safety boundaries, or eruption forecasts.

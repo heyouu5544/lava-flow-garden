@@ -1,15 +1,30 @@
-# 实施记录
+# Implementation Log
 
-日期：2026-10-29（Asia/Shanghai）。
+Date: 2026-10-29 (Asia/Shanghai).
 
-1. 检查工作区三份页面，确认只有 `github-sync/lava-flow-garden/` 是实际 Git 仓库，origin 为用户指定的 `https://github.com/heyouu5544/lava-flow-garden.git`。以 `main` 的 `bc495ca` 为基础继续开发，没有恢复旧提交或重建提交历史。两份已有未跟踪旧文件不纳入本次提交。
-2. 根据本次三张参考图提取高饱和蓝紫、珊瑚橙、明黄与奶油白，以及不规则绘本对话框的视觉方向。重新编写 Canvas 美术，没有粘贴参考插画、书名或作者文字。详细来源见 `ASSETS.md`。
-3. 重画远山、分色岩层、岩石、树木、前景、房屋、农田与水渠。缓存背景、山体、前景和纸张颗粒，以不同移动速度支持电影开场。标题页、讲解与实验共用同一 Canvas 实例。
-4. 新建统一的 `storybook.css`，重做标题、按钮、滑块、观察标签、结果、历史案例与说明。默认、悬停、按下、选中、禁用、键盘焦点均有可辨识状态；装饰层使用 `pointer-events:none`。
-5. 教学改为五个单一重点，加入逐字文字、点击补全、继续、Enter / 空格、Esc、跳过与完整重看。最后一段明确邀请玩家先固定一个参数开展比较。
-6. 保留原来的模型公式、历史来源、四项结果、解释、重复触发保护和 Reset 状态机。重绘低黏度长流、高黏度短厚堆积、高气体喷泉/烟云/碎屑，并保留观察镜头、高亮、剖面和村庄。
-7. 使用真实安装的 Microsoft Edge 无头浏览器检查完整流程。通过 CDP 发出真实鼠标/键盘输入，对按钮中心进行命中测试，收集运行异常和控制台错误，保存桌面与手机截图并人工查看。模型与历史单元测试另行执行。详细结果见 `VERIFICATION.md`。
+## Colorful storybook redesign
 
-这些是开发者功能验证和视觉审查，没有招募学生或将自动检查描述为同学测试。未来真实试用可以观察：是否能区分黏度和气体；是否会固定一个参数；是否会误把历史类比当成预测。
+1. Inspected the workspace and confirmed that `github-sync/lava-flow-garden/` is the actual Git repository, with `https://github.com/heyouu5544/lava-flow-garden.git` as `origin`. Existing history was preserved.
+2. Derived a high-saturation palette of lake blue, blue-violet, coral orange, bright yellow, and cream from the three user-provided visual references. The references informed color, texture, and dialogue-box structure only; no book title, author credit, finished illustration, or screenshot was copied.
+3. Rebuilt the Canvas artwork with original distant mountains, irregular rock layers, stones, vegetation, foreground, houses, fields, canals, clouds, lava, ash, and debris. Separate cached layers move at different speeds during the cinematic opening.
+4. Added `storybook.css` to unify the cover, dialogue, controls, sliders, observation tags, result cards, historical comparison, and notices. Default, hover, pressed, selected, disabled, and keyboard-focus states remain distinct, and decorative layers do not intercept pointer input.
+5. Organized the lesson into five single-topic chapters. Typed text can be revealed immediately, and the flow supports buttons, Enter, Space, Escape, skip, replay, and reduced motion.
+6. Preserved the teaching formulas, four results, explanations, repeat-trigger protection, Reset lifecycle, observation tools, village setting, and sourced historical analogies. Visuals distinguish long fluid flows, short viscous buildup, gas-rich fountains, ash columns, and debris.
+7. Verified the full experience in an installed Microsoft Edge browser through local CDP input, plus unit and syntax checks. These are developer checks, not a participant study.
 
-完成验证后，仅暂存本次 `volcano-lab/` 相关文件，使用 `Redesign Volcano Lab with colorful hand-painted visuals` 创建提交，再以普通 push 更新现有 `main`；不使用强制推送。
+The redesign was committed as `d4b4501` with `Redesign Volcano Lab with colorful hand-painted visuals`. Commit `87a3db4` then made Volcano Lab the repository homepage.
+
+## Preview-root audit
+
+An earlier service on port 4173 was found to serve a separate outer preview copy that still loaded `print.css`. Hash comparison identified the mismatch. The service was restarted from the absolute repository path, and `serve.cjs` was extended to print the served root, return `X-Volcano-Lab-Root`, and expose `/__preview.json` with the entry-file SHA-256. This makes the actual source of a preview verifiable.
+
+## English release
+
+1. Saved all local preview/document changes in Git stash, fast-forwarded `main` to `87a3db4`, then restored the local work without overwriting remote history.
+2. Translated the active HTML, story, controls, Canvas labels, model explanations, historical cases, status messages, errors, accessibility labels, tooltips, and tests into concise English. Set both active HTML entry points to `lang="en"` and removed duplicated bilingual labels.
+3. Updated the repository README and all current project documents in English. Historical development files remain for provenance, while current GitHub-facing content and screenshots describe the English release.
+4. Adjusted and reran the same complete browser flow, all four parameter combinations, observation views, Reset paths, replay/skip behavior, reduced motion, and compact layouts. Current results are recorded in `VERIFICATION.md`.
+
+## Participant testing status
+
+A real classmate or student trial is still pending. Future observation should check whether participants distinguish viscosity from gas content, change one variable at a time, and understand that the historical comparison is an analogy rather than a forecast. Automated checks and developer screenshot review are not presented as participant evidence.

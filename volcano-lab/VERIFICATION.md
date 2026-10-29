@@ -1,72 +1,76 @@
-# 实际验证记录
+# Verification Record
 
-日期：2026-10-29（Asia/Shanghai）。
+Date: 2026-10-30 (Asia/Shanghai).
 
-测试环境：本机已安装的 Microsoft Edge，无头浏览器，通过原生 CDP 驱动真实页面、鼠标和键盘；预览来自实际仓库 `volcano-lab/serve.cjs`，地址 `http://127.0.0.1:4173/`。这是开发者自动功能检查与人工截图审查，没有真实同学测试。
+Test environment: locally installed Microsoft Edge, driven headlessly through native CDP against the preview from the actual repository path at `http://127.0.0.1:4173/`. The browser script sends real mouse and keyboard events, checks hit targets with `elementFromPoint`, captures console/runtime errors, and writes current screenshots. These are developer checks and visual review, not a participant study.
 
-## 结果
+## Results
 
-- 现有模型与历史案例测试：**8 / 8 通过**，包括全部 0–100 输入组合、边界、单调关系和类比局限。
-- `scene.js`、`story.js`、`app.js`、`observer.js` 语法检查通过；Git 空白检查通过。
-- 完整桌面与手机浏览器回归通过；收集到的控制台错误和未捕获异常：**0**。
-- 截图人工查看了标题、教学、实验、四种喷发、结果/历史、村庄与手机页面。补查小屏和横屏截图后确认按钮完整可见。
+- Model and historical-case unit tests: **8 / 8 passed**, including every 0–100 input pair, bounds, monotonic relationships, and analogy limits.
+- Active JavaScript syntax checks and Git whitespace checks passed.
+- The complete desktop and mobile browser regression passed with **0 console errors or uncaught exceptions**.
+- Current English screenshots cover the title, opening, lesson, lab, four eruptions, results/history, observation targets, cutaway, and mobile layouts.
 
-| 检查 | 实际结果 |
+| Check | Verified result |
 | --- | --- |
-| 标题与环境动画 | VOLCANO LAB、开始探索、直接进入可见；间隔截取 Canvas 内容有变化，云、碎屑与熔岩持续动画 |
-| 开场 | 点击后按时完成约 9 秒远景、村庄、山坡、火山口、剖面镜头；随后进入知识介绍 |
-| 文字与教学 | 第一点击补全全文，再次推进；完整通过五段进入实验；Enter、空格通过 |
-| 教学修复 | 发现继续按钮有焦点时键盘推进不稳定；改为显式处理并阻止默认重复动作，再次回归通过 |
-| 跳过与重看 | 跳过镜头、跳过介绍、Esc、直接进入实验、重新观看开场均通过 |
-| 滑块 | 实际鼠标点击与 Home / End / ArrowRight 改变数值，实时输出同步；0、1、100 边界通过 |
-| 四组预设 | 填色、深紫描边和 ✓ 随选择更新；四轮连续喷发不需要刷新 |
-| Trigger eruption | 点击命中按钮，正常进入运行、参数锁定、进度增加、完成解锁 |
-| 重复触发 | 运行中再次点击显示“不会重复触发”，没有启动第二轮 |
-| 结果与历史 | 每轮产生四项指标、原因与来源类比；改参数后仍标注上一轮原参数 |
-| 观察 | 火山口、灰云、熔岩、村庄的实际镜头、场景高亮和说明同步改变；返回全景恢复；山体剖面可见 |
-| Reset | 完成后回到 40/40、空结果、隐藏历史；运行中取消后进度保持 0；随后再次触发并完成 |
-| 控件遮挡 | 测试点击前用 `elementFromPoint` 检查按钮中心命中目标；标题、跳过、继续、Trigger、Reset、预设、观察控件均通过 |
-| 手机完整流程 | 390×844 下标题→教学→实验→喷发→结果通过，页面无横向溢出，按钮命中通过 |
-| 小屏/横屏/平板 | 320×568、844×390、768×1024 的开始与直接进入按钮在视口内，点击成功，无横向溢出或控制台错误 |
-| 减少动态效果 | 自动推镜跳过，对话直接显示全文，可 Esc 进入实验 |
+| Title and ambient scene | `VOLCANO LAB`, `Start exploring`, and direct lab entry are visible; clouds, particles, and lava animate |
+| Cinematic opening | The approximately nine-second sequence visits wide terrain, village, slope, crater, and cutaway before the lesson |
+| Lesson | First activation reveals the full paragraph; the next advances; all five chapters reach the lab; Enter and Space work |
+| Skip and replay | Skip tour, skip introduction, Escape, direct lab entry, and replay introduction all work |
+| Sliders | Mouse and Home / End / ArrowRight change values; live output and 0, 1, 100 boundaries are correct |
+| Four presets | Fill, deep-violet outline, and selected mark update; four eruptions run sequentially without reload |
+| Trigger eruption | The hit target works, inputs lock, progress increases, results unlock, and another run becomes available |
+| Repeat protection | A second trigger during a run shows an English `already in progress` notice and does not create another eruption |
+| Results and history | Every run produces four metrics, an explanation, and a sourced analogy; changed inputs do not rewrite the previous run |
+| Observation tools | Crater, ash cloud, lava flow, and village move and highlight the target; Return to overview and cutaway work |
+| Reset | After completion it restores 40/40, clears results, and hides history; during a run it cancels progress; another eruption then completes |
+| Unobstructed controls | Center-point hit tests pass for title, skip, continue, Trigger, Reset, presets, and observation controls |
+| Mobile flow | At 390×844 the title → lesson → lab → eruption → results flow passes with no horizontal overflow |
+| Compact layouts | 320×568, 844×390, and 768×1024 keep both opening actions visible and clickable with no overflow or console errors |
+| Reduced motion | The camera tour is skipped, dialogue appears immediately, and Escape enters the lab |
+| English-only active experience | Active HTML, loaded scripts, Canvas labels, accessibility text, notices, and tests contain no Han characters |
 
-## 四组实际结果
+## Four verified result combinations
 
-所有数字均为 0–100 教学相对指数。
+All values are relative 0–100 teaching indices.
 
-| 黏度 / 气体 | 熔岩流动 | 灰柱高度 | 喷发强度 | 危险范围 | 历史类比 |
+| Viscosity / Gas | Lava flow | Ash height | Intensity | Hazard range | Historical analogy |
 | --- | --- | --- | --- | --- | --- |
-| 15 / 15 | 63 | 8 | 11 | 41 | Maunaulu 溢流阶段 |
-| 15 / 85 | 82 | 36 | 38 | 53 | Maunaulu 喷泉阶段 |
-| 85 / 15 | 18 | 15 | 18 | 17 | 圣海伦斯穹丘生长 |
-| 85 / 85 | 21 | 77 | 77 | 72 | 皮纳图博强烈爆发 |
+| 15 / 15 | 63 | 8 | 11 | 41 | Maunaulu effusive phase |
+| 15 / 85 | 82 | 36 | 38 | 53 | Maunaulu fountain phase |
+| 85 / 15 | 18 | 15 | 18 | 17 | Mount St. Helens dome growth |
+| 85 / 85 | 21 | 77 | 77 | 72 | Mount Pinatubo explosive eruption |
 
-截图可观察到低黏度的长流、高黏度的近口短厚流/穹丘，以及高气体组合更明显的喷泉、碎屑、烟柱与伞状云。画面不用于真实规模或危险范围判断。
+The screenshots show long fluid flows, short thick viscous flows and near-vent buildup, plus stronger fountains, ejecta, ash columns, and umbrella clouds in gas-rich runs. They must not be read as real scale or hazard maps.
 
-## 本次截图
+## Current English screenshots
 
-当前彩色版本均有 `storybook-` 前缀，旧版 JPG 只作为原有历史资料保留。
+All current colorful screenshots use the `storybook-` prefix in `screenshots/`. Older JPG files remain as historical material.
 
-- `01-title.png`：标题与火山封面。
-- `02-cinematic.png`：村庄横移镜头。
-- `03-lesson.png`：奶油色手绘对话框。
-- `04-lab.png`：桌面实验界面。
-- `05-results.png`：四项结果、原因与历史来源。
-- `06-village.png` / `07-section.png`：村庄高亮 / 岩浆剖面。
-- `eruption-15-15.png`、`eruption-15-85.png`、`eruption-85-15.png`、`eruption-85-85.png`：四种参数组合喷发中截图。
-- `08-mobile-title.png` 至 `12-mobile-results.png`：390×844 标题、教学、实验、参数按钮与结果。
-- `layout-320-568.png`、`layout-844-390.png`、`layout-768-1024.png`：小屏、横屏和平板封面。
+- `storybook-01-title.png`: English title and animated volcano cover.
+- `storybook-02-cinematic.png`: parallax village shot.
+- `storybook-03-lesson.png`: English cream-colored hand-drawn dialogue.
+- `storybook-04-lab.png`: desktop English experiment interface.
+- `storybook-05-results.png`: four results, explanation, and historical source.
+- `storybook-06-village.png` / `storybook-07-section.png`: village highlight / magma cutaway.
+- `storybook-eruption-15-15.png`, `15-85.png`, `85-15.png`, `85-85.png`: each parameter combination during eruption.
+- `storybook-08-mobile-title.png` through `storybook-12-mobile-results.png`: 390×844 title, lesson, lab, controls, and results.
+- `storybook-layout-320-568.png`, `storybook-layout-844-390.png`, `storybook-layout-768-1024.png`: compact portrait, landscape, and tablet covers.
 
-完整文件名在上述名称前加 `storybook-`，位于 `screenshots/`。
+## Reproduce
 
-## 复现
-
-在一个终端运行 `node volcano-lab/serve.cjs`，另一终端运行：
+Run `node volcano-lab/serve.cjs` in one terminal, then:
 
 ```powershell
 node --test volcano-lab/tests/model.test.cjs volcano-lab/tests/history.test.cjs
+node --check volcano-lab/js/model.js
+node --check volcano-lab/js/scene.js
+node --check volcano-lab/js/observer.js
+node --check volcano-lab/js/history.js
+node --check volcano-lab/js/app.js
+node --check volcano-lab/js/story.js
 node volcano-lab/tests/browser-smoke.cjs
 node volcano-lab/tests/browser-smoke.cjs --layouts-only
 ```
 
-浏览器测试为 Edge 和模拟视口验证；未进行实体手机触摸设备、Safari、Firefox 或真实学生研究。截图和自动检查不被描述为用户研究。
+Physical touch-device, Safari, Firefox, and real participant research remain untested. Automated checks and screenshots are not described as user research.

@@ -1,16 +1,16 @@
-/* Real installed Edge, headless CDP, no npm dependencies. Developer QA, not a user study. */
+/* Real installed Edge, headless CDP. Developer QA, not a user study. */
 const {spawn}=require('node:child_process');
 const fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),assert=require('node:assert/strict');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function main(){
  const profile=await fs.mkdtemp(path.join(os.tmpdir(),'volcano-lab-check-'));
- const edge=spawn(process.env.EDGE_PATH||'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--remote-debugging-port=9333','--remote-allow-origins=http://localhost:9333',`--user-data-dir=${profile}`,'about:blank'],{windowsHide:true,stdio:'ignore'});
+ const edge=spawn(process.env.EDGE_PATH||'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',['--headless=old','--no-sandbox','--disable-gpu-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--remote-allow-origins=*',`--user-data-dir=${profile}`,'about:blank'],{windowsHide:true,stdio:'ignore'});
  let ws;
  try{
-  let target;for(let n=0;n<50;n++){try{target=await (await fetch('http://127.0.0.1:9333/json/new?about:blank',{method:'PUT'})).json();break;}catch{await sleep(200);}}
-  assert.ok(target,'Edge CDP started');console.log('Edge CDP connected');ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise((r,j)=>{const t=setTimeout(()=>j(Error('WebSocket open timeout')),10000);ws.onopen=()=>{clearTimeout(t);r();};ws.onerror=e=>{clearTimeout(t);j(e);};});
+  let target,port;for(let n=0;n<80;n++){try{const active=(await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).trim().split(/\r?\n/);port=Number(active[0]);const targets=await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();target=targets.find(item=>item.type==='page');if(target)break;}catch{}await sleep(200);}
+  assert.ok(target,'Edge CDP started');ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(Error('WebSocket open timeout')),10000);ws.onopen=()=>{clearTimeout(t);resolve();};ws.onerror=error=>{clearTimeout(t);reject(error);};});console.log('Edge CDP connected');
   let id=0;const pending=new Map(),errors=[],logs=[];
-  ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);if(m.error)p.reject(Error(JSON.stringify(m.error)));else p.resolve(m.result);}else if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails.text+': '+JSON.stringify(m.params.exceptionDetails.exception));else if(m.method==='Log.entryAdded'&&m.params.entry.level==='error')errors.push(m.params.entry.text);};
+  ws.onmessage=event=>{const m=JSON.parse(event.data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);if(m.error)p.reject(Error(JSON.stringify(m.error)));else p.resolve(m.result);}else if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails.text+': '+JSON.stringify(m.params.exceptionDetails.exception));else if(m.method==='Log.entryAdded'&&m.params.entry.level==='error')errors.push(m.params.entry.text);};
   const call=(method,params={})=>new Promise((resolve,reject)=>{const n=++id,t=setTimeout(()=>{pending.delete(n);reject(Error('CDP timeout: '+method));},15000);pending.set(n,{resolve:v=>{clearTimeout(t);resolve(v);},reject:e=>{clearTimeout(t);reject(e);}});ws.send(JSON.stringify({id:n,method,params}));});
   const evaluate=async expression=>{const r=await call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});assert.ok(!r.exceptionDetails,JSON.stringify(r.exceptionDetails));return r.result.value;};
   const wait=async(expression,label,timeout=14000)=>{const end=Date.now()+timeout;while(Date.now()<end){if(await evaluate(expression))return;await sleep(120);}throw Error('Timed out: '+label);};
@@ -49,14 +49,14 @@ async function main(){
   for(const preset of ['15,15','15,85','85,15','85,85']){
    await click(`[data-preset="${preset}"]`);assert.equal(await evaluate(`document.querySelector('[data-preset="${preset}"]').getAttribute('aria-pressed')`),'true');await click('#trigger');
    assert.equal(await evaluate('document.querySelector("#viscosity").disabled'),true,'Parameters locked');
-   if(preset==='15,15'){await click('#trigger');assert.match(await evaluate('document.querySelector("#notice").textContent'),/不会重复触发/);}
+   if(preset==='15,15'){await click('#trigger');assert.match(await evaluate('document.querySelector("#notice").textContent'),/already in progress/);}
    await sleep(4200);await evaluate('document.querySelector(".observatory").scrollIntoView({block:"start",behavior:"instant"})');await screenshot('eruption-'+preset.replace(',','-'));
    await wait('document.querySelector(".results").dataset.revealed === "true"','eruption completes');
    assert.equal(await evaluate('document.querySelector("#history-card").hidden'),false);results.push(await evaluate('({v:document.querySelector("#viscosity").value,g:document.querySelector("#gas").value,metrics:["flow","ash","intensity","hazard"].map(k=>Number(document.getElementById(k+"-result").textContent)),history:document.querySelector("#history-name").textContent})'));
   }
   await evaluate('document.querySelector(".results").scrollIntoView({block:"start",behavior:"instant"})');await screenshot('05-results');
-  await click('[data-preset="15,15"]');assert.match(await evaluate('document.querySelector("#result-context").textContent'),/85 \/ 气体 85/,'Old results keep their original inputs');
-  for(const part of ['crater','ash','lava','village']){await click(`[data-part="${part}"]`);await sleep(1000);assert.equal(await evaluate('VolcanoLab.scene.part'),part);assert.match(await evaluate('document.querySelector("#part-description").textContent'),new RegExp(({crater:'火山口',ash:'火山灰云',lava:'熔岩流',village:'山脚村庄'})[part]));}
+  await click('[data-preset="15,15"]');assert.match(await evaluate('document.querySelector("#result-context").textContent'),/viscosity 85 \/ gas 85/i,'Old results keep their original inputs');
+  for(const part of ['crater','ash','lava','village']){await click(`[data-part="${part}"]`);await sleep(1000);assert.equal(await evaluate('VolcanoLab.scene.part'),part);assert.match(await evaluate('document.querySelector("#part-description").textContent'),new RegExp(({crater:'Crater',ash:'Ash cloud',lava:'Lava flow',village:'Foothill village'})[part],'i'));}
   await screenshot('06-village');await click('#return-overview');await sleep(1000);assert.equal(await evaluate('VolcanoLab.scene.canvas.dataset.shot'),'front');
   await click('[data-view="section"]');await sleep(1000);await screenshot('07-section');
   await click('#reset');assert.deepEqual(await evaluate('[document.querySelector("#viscosity").value,document.querySelector("#gas").value,document.querySelector("#flow-result").textContent,document.querySelector("#history-card").hidden]'),['40','40','—',true]);

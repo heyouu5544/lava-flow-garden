@@ -1,4 +1,4 @@
-# Volcano Lab | 火山实验室
+# Volcano Lab
 
 **Current project · PFAD Assignment 3 · Cai Zhichun**
 
@@ -58,4 +58,4 @@ Earlier files at the repository root and all previous commits are preserved as d
 
 ---
 
-**当前版本说明：** 本次作品为彩色二维手绘风格的 Volcano Lab。点击本页顶部的在线体验链接即可打开；最新代码、过程记录和素材说明均在 `volcano-lab/` 内。根目录中的旧防灾小游戏文件保留作开发历史。
+The current submission is the colorful, hand-painted 2D Volcano Lab. Use the live links above; current source, process notes, credits, and verification are in `volcano-lab/`. The older disaster-response game files at the repository root remain as development history.
