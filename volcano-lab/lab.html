@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f5ef">
+  <meta name="theme-color" content="#58bdd9">
   <meta name="description" content="调节岩浆黏度与气体含量，观察一次属于你的火山实验。">
   <title>Volcano Lab｜火山实验室</title>
-  <link rel="stylesheet" href="print.css">
+  <link rel="stylesheet" href="storybook.css">
   <script src="js/model.js" defer></script>
   <script src="js/scene.js" defer></script>
   <script src="js/observer.js" defer></script>
@@ -17,20 +17,20 @@
 <body data-entry="lab" data-mode="lab">
 
   <section id="opening" class="opening" aria-labelledby="opening-title">
-    <header class="opening-header"><a class="brand" href="index.html">△ VL / FIELD ARCHIVE</a><span>地球内部调查计划 / NO. 001</span></header>
-    <div class="opening-content"><p class="eyebrow">AN INTERACTIVE GEOLOGICAL FIELD NOTE</p><h1 id="opening-title">VOLCANO<br><span>LAB</span><i>01</i></h1><p class="opening-cn">火山实验室 / 地表之下</p><p class="opening-lead">沉默的山体，流动的内部。<br>从一次观察，走进一场喷发。</p><button id="start-exploring" class="explore-button" type="button">开始探索 <span>↗</span></button><button id="skip-opening" class="quiet-button" type="button">直接进入实验室 →</button></div>
-    <div class="opening-stamp">GEOLOGICAL<br>RECONNAISSANCE<span>地 质 观 测 档 案</span></div>
-    <footer class="opening-footer"><span>35° N / 138° E · SCHEMATIC TERRAIN</span><span>观察 / 理解 / 亲手实验　 >>> </span></footer>
+    <header class="opening-header"><a class="brand" href="index.html">△ VOLCANO LAB</a><span>一本可以动手的火山绘本</span></header>
+    <div class="opening-content"><p class="eyebrow">A LITTLE WONDER. A BIG ERUPTION.</p><h1 id="opening-title">VOLCANO<br><span>LAB</span><i>01</i></h1><p class="opening-cn">火山实验室 · 探索地表之下</p><p class="opening-lead">沉默的山体，流动的内部。<br>从一次观察，走进一场喷发。</p><button id="start-exploring" class="explore-button" type="button">开始探索 <span>↗</span></button><button id="skip-opening" class="quiet-button" type="button">直接进入实验室 →</button></div>
+    <div class="opening-stamp">LET US<br>ERUPT!<span>好奇心，正在冒泡</span></div>
+    <footer class="opening-footer"><span>A PICTURE-BOOK EXPERIMENT</span><span>观察 / 理解 / 亲手实验　 >>> </span></footer>
   </section>
   <section id="cinematic" class="cinematic" hidden aria-label="二维电影式知识介绍">
-    <header class="cinematic-header"><a class="brand" href="index.html">△ VOLCANO LAB</a><div><span class="eyebrow">FIELD CAMERA / <span id="camera-readout">场景全景</span></span></div><div><button id="skip-tour" class="quiet-button" type="button">进入知识介绍</button><button id="skip-intro" class="quiet-button" type="button">跳过介绍 →</button></div></header>
-    <section id="cg-dialogue" class="cg-dialogue" hidden aria-labelledby="dialogue-title"><div class="speaker"><strong>VL</strong><span>火山观测员<small>FIELD NOTES</small></span><span id="dialogue-progress">01 / 05</span></div><div class="dialogue-copy" aria-live="polite" aria-atomic="true"><p id="chapter-tag" class="eyebrow"></p><h2 id="dialogue-title" tabindex="-1"></h2><p id="dialogue-text"></p></div><div class="dialogue-actions"><span>观察画面中的红色标注线</span><button id="continue-dialogue" class="explore-button" type="button">继续 →</button></div></section>
+    <header class="cinematic-header"><a class="brand" href="index.html">△ VOLCANO LAB</a><div><span class="eyebrow">探索镜头 / <span id="camera-readout">场景全景</span></span></div><div><button id="skip-tour" class="quiet-button" type="button">进入知识介绍</button><button id="skip-intro" class="quiet-button" type="button">跳过介绍 →</button></div></header>
+    <section id="cg-dialogue" class="cg-dialogue" hidden aria-labelledby="dialogue-title"><div class="speaker"><strong>VL</strong><span>小岩 · 火山向导<small>YOUR FIELD GUIDE</small></span><span id="dialogue-progress">01 / 05</span></div><div class="dialogue-copy" aria-live="polite" aria-atomic="true"><p id="chapter-tag" class="eyebrow"></p><h2 id="dialogue-title" tabindex="-1"></h2><p id="dialogue-text"></p></div><div class="dialogue-actions"><span>点击显示全文 · Enter / 空格继续 · Esc 跳过</span><button id="continue-dialogue" class="explore-button" type="button">继续 →</button></div></section>
     <div class="tour-note">地形 → 火山口 → 岩浆与气体 <span>二维镜头 / FIELD CAMERA</span></div>
   </section>
   <div class="shell">
     <header class="header">
       <a class="brand" href="./index.html" aria-label="Volcano Lab 首页"><span class="brand-icon" aria-hidden="true">△</span> VOLCANO LAB<span class="brand-divider"></span><span class="brand-cn">火山实验室</span></a>
-      <nav class="lab-nav" aria-label="实验室导航"><a href="index.html">返回开场</a><a id="replay-intro" href="index.html?step=lesson">重读知识对话</a></nav>
+      <nav class="lab-nav" aria-label="实验室导航"><a href="index.html">返回开场</a><a id="replay-intro" href="index.html?step=lesson">重新观看介绍</a></nav>
     </header>
     <main>
       <section class="intro" aria-labelledby="page-title">
@@ -61,7 +61,7 @@
         </section>
         <section class="observatory panel" aria-labelledby="scene-title">
           <div class="scene-top"><div><span class="eyebrow">LIVE / 观察窗</span><h2 id="scene-title">喷发观测台</h2></div><span id="phase" class="phase"><i></i> 等待实验</span></div>
-          <div class="scene-frame"><canvas id="volcano" width="1280" height="720" role="img" aria-label="可切换视角的火山教学模型。尚未喷发；触发后将在下方显示文字结果。">实验结果也会以文字显示。</canvas><div id="camera-notice" class="camera-notice" aria-live="polite"></div><div class="scene-caption"><span>二维地质档案 / 非真实比例</span><span id="scene-state">SYSTEM READY</span></div></div>
+          <div class="scene-frame"><canvas id="volcano" width="1280" height="720" role="img" aria-label="可切换视角的火山教学模型。尚未喷发；触发后将在下方显示文字结果。">实验结果也会以文字显示。</canvas><div id="camera-notice" class="camera-notice" aria-live="polite"></div><div class="scene-caption"><span>手绘火山世界 / 非真实比例</span><span id="scene-state">SYSTEM READY</span></div></div>
           <p class="render-status" id="render-status" role="status">正在准备二维手绘场景…</p>
           <div class="observation-tools"><div class="tool-block"><h3 class="observation-title">切换视角</h3><p class="tool-help">平滑移动镜头；不会改变参数。</p><div class="view-buttons" role="group" aria-label="切换二维观察镜头"><button type="button" data-view="front" aria-pressed="true">场景全景</button><button type="button" data-view="crater" aria-pressed="false">火山口特写</button><button type="button" data-view="section" aria-pressed="false">山体剖面</button></div></div><div class="tool-block"><h3 class="observation-title">观察部位</h3><p class="tool-help">镜头靠近并高亮目标；再次点击会重新聚焦。</p><div class="part-buttons" role="group" aria-label="观察火山部位"><button type="button" data-part="crater" aria-pressed="false" title="放大火山口并显示解释">火山口</button><button type="button" data-part="ash" aria-pressed="false" title="观察喷发后的火山灰云">火山灰云</button><button type="button" data-part="lava" aria-pressed="false" title="观察沿沟壑延伸的熔岩流">熔岩流</button><button type="button" data-part="village" aria-pressed="false" title="观察山脚聚落、农田和水渠">山脚村庄</button></div></div><button id="return-overview" class="return-overview" type="button">↙ 返回全景</button><p id="part-description" class="part-description" role="status">选择视角或部位开始观察。灰云和熔岩会在喷发后出现。</p></div>
           <div class="scene-legend"><span><i class="key lava-key"></i> 活跃熔岩</span><span><i class="key ash-key"></i> 火山灰</span><span><i class="key ejecta-key"></i> 喷出物</span><span class="duration">压力积累 → 喷发 → 稳定</span></div>
@@ -78,7 +78,7 @@
         </div>
         <article class="explanation" aria-labelledby="explanation-title"><div class="explanation-label"><span class="eyebrow">WHY IT HAPPENS</span><h3 id="explanation-title">从一次观察开始</h3><span id="style-badge" class="style-badge">等待喷发</span></div><div class="explanation-copy"><p id="explanation-text">试着先用较低黏度和较少气体喷发一次，再提高两个参数。留意：熔岩流得更远，是否一定意味着火山灰也更高？</p><p id="next-experiment" class="next-experiment">实验提示：比较时只改变一个参数，另一个保持不变。</p></div></article>
       </section>
-      <article id="history-card" class="history-card" hidden aria-labelledby="history-heading"><div><p class="eyebrow">FIELD ARCHIVE / 教学类比</p><h2 id="history-heading">历史喷发对照</h2><div id="history-year" class="history-year"></div><p id="history-context"></p></div><div><h3 id="history-name"></h3><p id="history-summary"></p><p id="history-similarity" class="history-similarity"></p><p id="history-limits"></p><a id="history-source" target="_blank" rel="noopener noreferrer"></a><p class="history-caveat">只比较部分喷发表现，不对应真实规模或危险范围。这两个滑块不能单独解释真实火山，本模拟没有预测历史或未来事件。</p></div></article>
+      <article id="history-card" class="history-card" hidden aria-labelledby="history-heading"><div><p class="eyebrow">THEN & NOW / 教学类比</p><h2 id="history-heading">历史喷发对照</h2><div id="history-year" class="history-year"></div><p id="history-context"></p></div><div><h3 id="history-name"></h3><p id="history-summary"></p><p id="history-similarity" class="history-similarity"></p><p id="history-limits"></p><a id="history-source" target="_blank" rel="noopener noreferrer"></a><p class="history-caveat">只比较部分喷发表现，不对应真实规模或危险范围。这两个滑块不能单独解释真实火山，本模拟没有预测历史或未来事件。</p></div></article>
       <aside class="model-note"><span class="note-icon" aria-hidden="true">i</span><p><strong>这是探索工具，不是火山预测。</strong> 动画和全部指数来自教学简化模型，不对应真实距离、高度或 VEI 等级。实际喷发还受温度、成分、地形、风向等影响；图中边界不代表安全线。<a href="https://www.usgs.gov/faqs/how-do-volcanoes-erupt" target="_blank" rel="noopener noreferrer">了解科学原理 ↗</a></p></aside>
       <noscript><p class="noscript">请启用 JavaScript 后进行实验。此页面无需联网或安装依赖。</p></noscript>
     </main>
