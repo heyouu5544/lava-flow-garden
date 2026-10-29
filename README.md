@@ -1,43 +1,61 @@
-# Last 30 Seconds — 3D Volcano Defense
+# Volcano Lab | 火山实验室
 
-Protect three village districts during a volcanic eruption. Place up to three basalt walls on a three-dimensional mountain, choose one of three outlets, and redirect the advancing lava before the 30-second response window closes.
+**Current project · PFAD Assignment 3 · Cai Zhichun**
 
-## Run
+A colorful, hand-painted 2D interactive volcano laboratory. Explore a short illustrated opening and guided lessons, then adjust magma viscosity and gas content to see how they change an eruption.
 
-Extract the entire ZIP, keep all files together, and open `index.html` in Chrome or Edge. No installation or internet connection is required: Three.js is included locally. In VS Code, you may also open this folder with Live Server. A browser with WebGL/hardware acceleration is required.
+## ▶ Play the current version
 
-## Controls
+**[Launch Volcano Lab in your browser](https://heyouu5544.github.io/lava-flow-garden/volcano-lab/)**  
+[Go directly to the experiment](https://heyouu5544.github.io/lava-flow-garden/volcano-lab/lab.html)
 
-- **Click dry terrain:** place a rock barrier, up to three.
-- **Click a placed rock:** remove it, freeing a barrier slot.
-- **Drag:** orbit the 3D volcano; **mouse wheel:** zoom.
-- **Reset view / Top view:** return to the starting angle or inspect the terrain from above.
-- **Outlet buttons:** choose Western Bay, Eastern Quarry, or North Basin.
-- **Start response:** begin the 30-second round. Barriers and outlets can still be changed while lava moves.
-- **Reset:** clear the round and try again.
+No installation is needed for the online version. The current project lives in **[`volcano-lab/`](./volcano-lab/)**.
 
-Gold dashes show the forecast. Orange glowing tubes show the actual lava trail. The red boundary surrounds the village danger zone. Invalid placements and exhausted barrier supplies produce visible feedback. Camera movement does not place barriers.
+![Current Volcano Lab title screen](./volcano-lab/screenshots/storybook-01-title.png)
 
-The expanded village contains 30 buildings and 780 residents across Old Town, River Ward and Farm Ridge. Live counters show residents, buildings and eruption intensity. Seismic surges after 10 and 20 seconds make the lava progressively faster, and a dangerous forecast names the districts currently in its path.
+## What to try
 
-## Result and scoring
+1. Choose **Start exploring** to watch the illustrated opening and read the five short lessons. You can skip or replay the introduction.
+2. Adjust **magma viscosity** and **gas content**, or choose a preset combination.
+3. Select **Trigger eruption** and observe the lava, ash cloud, eruption intensity, and hazard-range indicators.
+4. Compare the explanation and historical eruption analogy with the visual result.
+5. Explore the crater, ash cloud, lava flow, village, or mountain cross-section. Use **Reset** to start again.
 
-The score starts at 100. A district reached by lava loses 42% of its resident count; buildings directly touched by the route are also recorded. Resident losses carry the largest score penalty, each damaged building adds a smaller penalty, and failure to reach an outlet costs 22 points. Scores are clamped at zero. The report identifies the affected district and gives a concrete retry suggestion.
+During an eruption, controls prevent overlapping runs and explain repeated trigger attempts. Reset can cancel the current experiment. Keyboard controls and a responsive mobile layout are included.
 
-## Implementation
+![Current experiment and hand-painted volcano scene](./volcano-lab/screenshots/storybook-04-lab.png)
 
-- `index.html`: interface and styles.
-- `game.js`: procedural 3D terrain, camera, raycast interaction, pathfinding, lava progression, and results.
-- `three.min.js`: locally bundled Three.js 0.160.0.
-- `THREE-LICENSE.txt`: Three.js MIT license.
-- `PROCESS.md`: decisions, development checks, and pending user trial.
+![Eruption results and historical comparison](./volcano-lab/screenshots/storybook-05-results.png)
 
-The larger and brighter 3D map has a crater rim, sloping terrain, a recessed lava pool, rocky coast, moon and stars, roads, trees, streetlights, a clock tower, 30 detailed houses, smoke and embers. Models and effects are generated in code. Navigation samples remain internal; there is no visible or clickable square grid. The routing cost penalizes climbing, village danger zones and barrier footprints; this is a game abstraction, not a physical lava simulation. Switching outlets acts as an abstract diversion command.
+## Project documents
 
-## Credits
+- [Current source code and full running instructions](./volcano-lab/)
+- [Current development process and user-test plan](./volcano-lab/PROCESS.md)
+- [Asset sources, original artwork, and credits](./volcano-lab/ASSETS.md)
+- [Developer verification and screenshots](./volcano-lab/VERIFICATION.md)
 
-Developed with ChatGPT/Codex assistance for concept refinement, code generation, and debugging. Three.js by the Three.js authors, MIT license: https://threejs.org/ (source release: https://github.com/mrdoob/three.js/tree/r160). All terrain, houses, rocks, smoke texture and visual effects are generated in this project. No downloaded imagery or real volcanic dataset is used.
+**User testing:** developer checks are documented separately from participant testing. A real classmate trial and the resulting design change are still pending; automated checks are not presented as user-test evidence.
 
-## Known limitations
+## Run locally
 
-One fixed terrain and English interface. No real hazard prediction. Touch supports dragging and view buttons; wheel zoom is intended for a mouse. 3D map placement is pointer-based. A real user trial and its resulting iteration still need to be recorded in `PROCESS.md` before the final course submission.
+Download or clone this repository, then run from the repository root:
+
+```sh
+node volcano-lab/serve.cjs
+```
+
+Open `http://127.0.0.1:4173/`. The project uses native HTML, CSS, JavaScript, and Canvas with no npm runtime dependencies. You can also open `volcano-lab/index.html` directly.
+
+## Educational model
+
+The sliders and result indicators are relative teaching indices. They are not real gas percentages, physical heights or distances, VEI measurements, or real safety boundaries. Historical cases illustrate similarities in eruption behavior; two parameters cannot reproduce or predict a real eruption.
+
+## Development history
+
+This repository began with **Last 30 Seconds**, a grid prototype followed by a 3D village-defense game. The project later changed direction to **Volcano Lab**, an educational experiment, and then adopted the current colorful 2D storybook presentation.
+
+Earlier files at the repository root and all previous commits are preserved as development history. **For the current submission, use `volcano-lab/` and the links above.** The repository name remains `lava-flow-garden` so the original submission URL and history stay available.
+
+---
+
+**当前版本说明：** 本次作品为彩色二维手绘风格的 Volcano Lab。点击本页顶部的在线体验链接即可打开；最新代码、过程记录和素材说明均在 `volcano-lab/` 内。根目录中的旧防灾小游戏文件保留作开发历史。
