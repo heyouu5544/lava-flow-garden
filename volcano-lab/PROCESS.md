@@ -4,7 +4,7 @@ Date: 2026-10-29 (Asia/Shanghai).
 
 ## Colorful storybook redesign
 
-1. Inspected the workspace and confirmed that `github-sync/lava-flow-garden/` is the actual Git repository, with `https://github.com/heyouu5544/lava-flow-garden.git` as `origin`. Existing history was preserved.
+1. Inspected the workspace and confirmed the actual Git repository rather than editing a separate preview copy. The repository is now `https://github.com/heyouu5544/volcano-lab.git`, and its existing history is preserved.
 2. Derived a high-saturation palette of lake blue, blue-violet, coral orange, bright yellow, and cream from the three user-provided visual references. The references informed color, texture, and dialogue-box structure only; no book title, author credit, finished illustration, or screenshot was copied.
 3. Rebuilt the Canvas artwork with original distant mountains, irregular rock layers, stones, vegetation, foreground, houses, fields, canals, clouds, lava, ash, and debris. Separate cached layers move at different speeds during the cinematic opening.
 4. Added `storybook.css` to unify the cover, dialogue, controls, sliders, observation tags, result cards, historical comparison, and notices. Default, hover, pressed, selected, disabled, and keyboard-focus states remain distinct, and decorative layers do not intercept pointer input.
@@ -25,6 +25,14 @@ An earlier service on port 4173 was found to serve a separate outer preview copy
 3. Updated the repository README and all current project documents in English. Historical development files remain for provenance, while current GitHub-facing content and screenshots describe the English release.
 4. Adjusted and reran the same complete browser flow, all four parameter combinations, observation views, Reset paths, replay/skip behavior, reduced motion, and compact layouts. Current results are recorded in `VERIFICATION.md`.
 
-## Participant testing status
+## User Testing and Iteration
 
-A real classmate or student trial is still pending. Future observation should check whether participants distinguish viscosity from gas content, change one variable at a time, and understand that the historical comparison is an analogy rather than a forecast. Automated checks and developer screenshot review are not presented as participant evidence.
+Liu Ling found that some buttons did not respond clearly enough and that the reaction after clicking felt slow. In response, the revision added immediate visual feedback: buttons show a clear pressed state while being clicked, preset and observation buttons retain a selected state, and status text changes as soon as an action begins. **Trigger eruption** immediately changes to a running state while the simulation is active. Repeated clicks during an eruption display a clear message instead of starting overlapping animation, and **Reset** can cancel the current experiment.
+
+Yin Shiqi felt that the original black-and-white visual style did not suit an educational interactive experience. This feedback led to the colorful hand-painted 2D redesign, covering the opening cinematic, teaching dialogue, volcano scene, controls, buttons, result panels, and observation interface.
+
+These changes were based on participant feedback. Participant retesting after the revisions has not yet been documented. Automated checks and developer screenshot review are not presented as participant retesting.
+
+## Repository Rename
+
+The GitHub repository was renamed to `heyouu5544/volcano-lab` without rewriting or deleting history. The local `origin` now points to `https://github.com/heyouu5544/volcano-lab.git`. Because the current site remains in the repository's `volcano-lab/` subdirectory, its GitHub Pages entry is `https://heyouu5544.github.io/volcano-lab/volcano-lab/`.

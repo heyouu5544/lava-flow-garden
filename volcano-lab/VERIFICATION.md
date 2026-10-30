@@ -4,6 +4,9 @@ Date: 2026-10-30 (Asia/Shanghai).
 
 Test environment: locally installed Microsoft Edge, driven headlessly through native CDP against the preview from the actual repository path at `http://127.0.0.1:4173/`. The browser script sends real mouse and keyboard events, checks hit targets with `elementFromPoint`, captures console/runtime errors, and writes current screenshots. These are developer checks and visual review, not a participant study.
 
+Repository: <https://github.com/heyouu5544/volcano-lab><br>
+Expected GitHub Pages entry: <https://heyouu5544.github.io/volcano-lab/volcano-lab/>
+
 ## Results
 
 - Model and historical-case unit tests: **8 / 8 passed**, including every 0–100 input pair, bounds, monotonic relationships, and analogy limits.
@@ -19,10 +22,11 @@ Test environment: locally installed Microsoft Edge, driven headlessly through na
 | Skip and replay | Skip tour, skip introduction, Escape, direct lab entry, and replay introduction all work |
 | Sliders | Mouse and Home / End / ArrowRight change values; live output and 0, 1, 100 boundaries are correct |
 | Four presets | Fill, deep-violet outline, and selected mark update; four eruptions run sequentially without reload |
-| Trigger eruption | The hit target works, inputs lock, progress increases, results unlock, and another run becomes available |
+| Pressed feedback | A real mouse-down on an ordinary button immediately changes its transform and removes the raised shadow |
+| Trigger eruption | The hit target works; the button and phase text immediately show the running state, inputs lock, progress increases, results unlock, and another run becomes available |
 | Repeat protection | A second trigger during a run shows an English `already in progress` notice and does not create another eruption |
 | Results and history | Every run produces four metrics, an explanation, and a sourced analogy; changed inputs do not rewrite the previous run |
-| Observation tools | Crater, ash cloud, lava flow, and village move and highlight the target; Return to overview and cutaway work |
+| Observation tools | Crater, ash cloud, lava flow, and village retain their active state, move and highlight the target; view buttons also retain active state; Return to overview and cutaway work |
 | Reset | After completion it restores 40/40, clears results, and hides history; during a run it cancels progress; another eruption then completes |
 | Unobstructed controls | Center-point hit tests pass for title, skip, continue, Trigger, Reset, presets, and observation controls |
 | Mobile flow | At 390×844 the title → lesson → lab → eruption → results flow passes with no horizontal overflow |
@@ -73,4 +77,4 @@ node volcano-lab/tests/browser-smoke.cjs
 node volcano-lab/tests/browser-smoke.cjs --layouts-only
 ```
 
-Physical touch-device, Safari, Firefox, and real participant research remain untested. Automated checks and screenshots are not described as user research.
+Physical touch-device, Safari, and Firefox remain untested. Participant retesting after the revisions has not yet been documented. Automated checks and screenshots are not described as participant retesting.

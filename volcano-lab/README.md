@@ -2,12 +2,12 @@
 
 Begin on an animated volcano cover, travel through a layered parallax opening and five short lessons, then explore how magma viscosity and gas content change an eruption. Lake blue skies, blue-violet rock layers, coral-orange and yellow lava, and cream-colored clouds share one hand-painted 2D world.
 
-This is the current project in `heyouu5544/lava-flow-garden`. Work was completed in the actual Git checkout at `github-sync/lava-flow-garden/volcano-lab/`, not in the separate preview copy elsewhere in the workspace. The repository's full history remains intact.
+This is the current project in [`heyouu5544/volcano-lab`](https://github.com/heyouu5544/volcano-lab). Work was completed in the actual Git checkout rather than a separate preview copy. The repository's full history remains intact.
 
 ## Play online
 
-- [Launch the storybook opening](https://heyouu5544.github.io/lava-flow-garden/volcano-lab/)
-- [Go directly to the experiment](https://heyouu5544.github.io/lava-flow-garden/volcano-lab/lab.html)
+- [Launch the storybook opening](https://heyouu5544.github.io/volcano-lab/volcano-lab/)
+- [Go directly to the experiment](https://heyouu5544.github.io/volcano-lab/volcano-lab/lab.html)
 
 ![English Volcano Lab title screen](./screenshots/storybook-01-title.png)
 
@@ -25,7 +25,7 @@ node volcano-lab/serve.cjs
 
 Open <http://127.0.0.1:4173/> for the opening or <http://127.0.0.1:4173/lab.html> for the lab. The project uses native HTML, CSS, JavaScript, and Canvas, with no npm runtime dependency or external font.
 
-The startup log prints the absolute `Serving project` path. Visit <http://127.0.0.1:4173/__preview.json> to verify the served root, entry file, and SHA-256 hash. Responses also include `X-Volcano-Lab-Root`. In this workspace the path must end in `github-sync/lava-flow-garden/volcano-lab/`.
+The startup log prints the absolute `Serving project` path. Visit <http://127.0.0.1:4173/__preview.json> to verify the served root, entry file, and SHA-256 hash. Responses also include `X-Volcano-Lab-Root`.
 
 ## Experience and retained features
 
@@ -53,6 +53,13 @@ The startup log prints the absolute `Serving project` path. Visit <http://127.0.
 
 Earlier CSS, 3D scripts, and JPG screenshots remain as historical artifacts. The current entry points load `storybook.css` and the scripts listed in their HTML.
 
+## User Testing
+
+- Liu Ling found that some buttons did not respond clearly enough and that the response after clicking felt slow. The revision now shows immediate pressed and selected states, updates status text as soon as an action starts, changes **Trigger eruption** to a visible running state, explains repeated clicks during an eruption, and allows **Reset** to cancel the current run.
+- Yin Shiqi felt that the original black-and-white visual style was not suitable for an educational interactive experience. This feedback drove the colorful hand-painted 2D redesign of the opening cinematic, teaching dialogue, volcano scene, controls, buttons, result panels, and observation tools.
+
+These changes were based on participant feedback. Participant retesting after the revisions has not yet been documented.
+
 ## Verification
 
 ```powershell
@@ -66,6 +73,6 @@ node volcano-lab/tests/browser-smoke.cjs --layouts-only
 
 The browser script uses an installed Microsoft Edge instance, a temporary profile, and a dynamically assigned local CDP port. It writes the current English screenshots to `screenshots/storybook-*.png`.
 
-These are developer checks and screenshot reviews, not a participant study. A real classmate trial and any design change based on it are still pending.
+These are developer checks and screenshot reviews, not participant retesting. Participant retesting after the revisions has not yet been documented.
 
 All values are relative teaching indices, not real distances, heights, gas percentages, VEI levels, safety boundaries, or eruption forecasts.
